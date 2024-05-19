@@ -1,6 +1,29 @@
 import psycopg2
+import re
 
 BRANDS = ['DMC', 'Anchor']
+
+# Fixes user input
+def re_input(match):
+    comm = match.group(1)
+    comm = comm.lower()
+    
+    brand = match.group(2)
+    fno = match.group(3)
+    
+    if brand.upper() == BRANDS[0]:
+        brand = brand.upper() 
+         
+    if brand.capitalize() == BRANDS[1]:
+        brand = brand.capitalize()
+    
+    if fno.capitalize() == 'White' or fno.capitalize() == 'Ecru':
+        fno = fno.capitalize()
+        
+    if fno == 'b5200':
+        fno = 'B5200'
+    
+    return comm, brand, fno
 
 class Database:
     def __init__(self, config):
@@ -18,13 +41,12 @@ class Database:
                     ORDER BY fno;
                     """)
         
-        output = cursor.fetchall()
-
-        if output:
+        try:
+            output = cursor.fetchall()
             cursor.close()
             return output
 
-        else:
+        except:
             cursor.close()
             return False
 
@@ -32,8 +54,8 @@ class Database:
     def stock_count(self):
         cursor = self.conn.cursor()
         cursor.execute("""
-                    SELECT * FROM public.stock
-                    """)
+                       SELECT * FROM public.stock
+                       """)
         
         stock_no = len(cursor.fetchall())
 
@@ -44,41 +66,42 @@ class Database:
     def search(self, brand, fno):
         cursor = self.conn.cursor()
 
-        if brand == 'DMC':
+        #NOTE: Does not support Anchor
+        if brand == BRANDS[0]:
             cursor.execute("""
-                        SELECT stock.*, dmc.name, dmc.hex
-                        FROM public.stock INNER JOIN public.dmc ON (stock.fno = dmc.fno)
-                        WHERE stock.fno = %s;
-                        """, 
-                        (fno,))
+                           SELECT stock.*, dmc.name, dmc.hex
+                           FROM public.stock INNER JOIN public.dmc ON (stock.fno = dmc.fno)
+                           WHERE stock.fno = %s;
+                           """, 
+                           (fno,))
 
-        output = cursor.fetchall()
-        
-        if output:
+        try:
+            output = cursor.fetchall()
             cursor.close()
             return output
         
-        else:
+        except:
+            cursor.close()
             return False
         
     # Returns possible conversions for specified floss number according to what is available in stock        
     def convert_stock(self, brand, fno):
         cursor = self.conn.cursor()
 
-        cursor.execute("""
-                    SELECT DISTINCT dmc_to_anchor.dmc, stock.fno, dmc_to_anchor.hex
-                    FROM public.stock INNER JOIN public.dmc_to_anchor ON (stock.fno = dmc_to_anchor.anchor)
-                    WHERE dmc_to_anchor.dmc = %s;
-                    """,
-                    (fno,))
+        if brand == BRANDS[0]:
+            cursor.execute("""
+                           SELECT DISTINCT dmc_to_anchor.dmc, stock.fno "anchor", dmc_to_anchor.hex
+                           FROM public.stock INNER JOIN public.dmc_to_anchor ON (dmc_to_anchor.anchor = stock.fno)
+                           WHERE dmc_to_anchor.dmc = 'White';
+                           """,
+                           (fno,))
         
-        output = cursor.fetchall()
-        
-        if output:
+        try:
+            output = cursor.fetchall()
             cursor.close()
             return output
                 
-        else:
+        except:
             cursor.close()
             return False
     
@@ -86,10 +109,7 @@ class Database:
     def convert(self, brand, fno):
         cursor = self.conn.cursor()
 
-        if brand == 'Anchor':
-            print('Currently unavailable.')
-
-        if brand == 'DMC':
+        if brand == BRANDS[0]:
             cursor.execute("""
                         SELECT dmc, anchor, hex
                         FROM public.dmc_to_anchor
@@ -97,25 +117,24 @@ class Database:
                         """,
                         (fno,))
             
-            output = cursor.fetchall()
-            
-            if output:
+            try:
+                output = cursor.fetchall()
                 cursor.close()
                 return output
 
-            else:
+            except:
                 cursor.close()
                 return False
-
+        
     # Adds to stock
     def add(self, brand, fno):
         cursor = self.conn.cursor()
 
         cursor.execute("""
-                    SELECT * FROM public.stock 
-                    WHERE stock.brand = %s AND stock.fno = %s;
-                    """, 
-                    (brand, fno,))
+                       SELECT * FROM public.stock 
+                       WHERE stock.brand = %s AND stock.fno = %s;
+                       """, 
+                       (brand, fno,))
         
         if cursor.fetchone():
             cursor.close()
@@ -123,10 +142,10 @@ class Database:
 
         else:
             cursor.execute("""
-                        INSERT INTO public.stock (brand, fno)
-                        VALUES (%s, %s);
-                        """,
-                        (brand, fno))
+                           INSERT INTO public.stock (brand, fno)
+                           VALUES (%s, %s);
+                           """,
+                           (brand, fno))
             self.conn.commit()
 
             cursor.close()
@@ -137,17 +156,17 @@ class Database:
         cursor = self.conn.cursor()
 
         cursor.execute("""
-                    SELECT * FROM public.stock 
-                    WHERE stock.brand = %s AND stock.fno = %s;
-                    """, 
-                    (brand, fno,))
+                       SELECT * FROM public.stock 
+                       WHERE stock.brand = %s AND stock.fno = %s;
+                       """, 
+                       (brand, fno,))
         
         if cursor.fetchone():
             cursor.execute("""
-                        DELETE FROM public.stock
-                        WHERE stock.brand = %s AND stock.fno = %s;
-                        """,
-                        (brand, fno))
+                           DELETE FROM public.stock
+                           WHERE stock.brand = %s AND stock.fno = %s;
+                           """,
+                          (brand, fno))
             self.conn.commit()
             
             cursor.close()
@@ -159,20 +178,20 @@ class Database:
 
     # Checks validity of input
     def input_validation(self, brand, fno):
-        if brand not in BRANDS:
-            return False
+        if brand in BRANDS:
         
-        cursor = self.conn.cursor()
-        
-        if brand == 'DMC':
-            cursor.execute("""
-                        SELECT * FROM public.dmc
-                        WHERE dmc.fno = %s;
-                        """,
-                        (fno,))
-        
-            output = cursor.fetchone()
-            if not output:
-                return False
-        
-        return True
+            cursor = self.conn.cursor()
+            
+            if brand == BRANDS[0]:
+                cursor.execute("""
+                            SELECT * FROM public.dmc
+                            WHERE dmc.fno = %s;
+                            """,
+                            (fno,))
+            
+                output = cursor.fetchone()
+                if not output:
+                    return False
+
+            return True
+        return False

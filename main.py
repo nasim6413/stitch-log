@@ -1,98 +1,102 @@
+import re
 from database import *
 from config import DB_CONFIG
-
+   
 # Initialising connection
-floss = Database(DB_CONFIG)
+print('STITCH TRACKER')
 
-print('STITCH TRACKER v0')
+floss = Database(DB_CONFIG)
 user_input = ''
 
 # Main loop
 while user_input != 'exit':
     user_input = input('ENTER ACTION: ')
-    comm = user_input.split(' ')[0]
     
-    if comm == 'list':
-        act = floss.flist()
-        if act:
+    if user_input == 'list':
+        action = floss.flist()
+        if action:
             print('Current stock:')
-            for item in act:
+            for item in action:
                 print(f'{item[0]} | {item[1]}')
         else:
             print('Stock empty.')
 
-    if comm == 'count':
+    if user_input == 'count':
         fcount = floss.stock_count()
         print(f'Currently {fcount} floss in stock.')
 
-    if comm == 'search':
-        brand, fno = user_input.split(' ')[1], user_input.split(' ')[2]
-        if not floss.input_validation(brand, fno):
-            print('Invalid input.')
-            
-        else:
-            act = floss.search(brand, fno)
-            
-            if act:
-                print('Match found:')
-                for r in act:
-                    print(f'{r[0]} {r[1]} | {r[2]} | {r[3]}')
-                    
+    # Checks for command
+    pattern = r'(\w+)\s*(DMC|Anchor)\s*(\d{1,4}|B5200|ECRU|BLANC|White)'
+    match = re.match(pattern, user_input, re.IGNORECASE)
+
+    if match:      
+        comm, brand, fno = re_input(match)
+        
+        # Commands
+        if comm == 'search':
+            if not floss.input_validation(brand, fno):
+                print('Invalid input.')
+                
             else:
-                print('No available stock.')
-                print('Checking for possible conversions...')
+                action = floss.search(brand, fno)
                 
-                act = floss.convert_stock(brand, fno)
-                
-                if act:
-                    print('Available conversions:')
-                    for r in act:
-                        print(f'DMC {r[0]} -> Anchor {r[1]} | {r[2]}')
-            
+                if action:
+                    print('Match found:')
+                    for r in action:
+                        print(f'{r[0]} {r[1]} | {r[2]} | {r[3]}')
+                        
                 else:
-                    print('No available conversions.')
+                    print('No available stock.')
+                    print('Checking for possible conversions...')
+                    
+                    action = floss.convert_stock(brand, fno)
+                    
+                    if action:
+                        print('Available conversions:')
+                        for r in action:
+                            print(f'DMC {r[0]} -> Anchor {r[1]} | {r[2]}')
+                
+                    else:
+                        print('No available conversions.')
 
-    if comm == 'add':
-        brand, fno = user_input.split(' ')[1], user_input.split(' ')[2]
-        if not floss.input_validation(brand, fno):
-            print('Not a valid input.')
-            
-        else:
-            act = floss.add(brand, fno)
-            
-            if act:
-                print('Entry added successfully.')
+        if comm == 'add':
+            if not floss.input_validation(brand, fno):
+                print('Not a valid input.')
                 
             else:
-                print('Entry already in database.')
-        
-    if comm == 'del':
-        brand, fno = user_input.split(' ')[1], user_input.split(' ')[2]
-        if not floss.input_validation(brand, fno):
-            print('Invalid input.')
-        
-        else:
-            act = floss.delete(brand, fno)
-            if act:
-                print('Entry deleted successfully.')
-            else:
-                print('Entry not in database.')
-
-    if comm == 'convert':
-        brand, fno = user_input.split(' ')[1], user_input.split(' ')[2]
-        if not floss.input_validation(brand, fno):
-            print('Invalid input.')
-            
-        else:
-            act = floss.convert(brand, fno)
-            
-            if act:
-                print('Possible conversion(s):')
-                for r in act:
-                    print(f'DMC {r[0]} -> Anchor {r[1]} | {r[2]}')
+                action = floss.add(brand, fno)
+                
+                if action:
+                    print('Entry added successfully.')
                     
+                else:
+                    print('Entry already in database.')
+            
+        if comm == 'del':
+            if not floss.input_validation(brand, fno):
+                print('Invalid input.')
+            
             else:
-                print('No possible conversions.')
+                action = floss.delete(brand, fno)
+                if action:
+                    print('Entry deleted successfully.')
+                else:
+                    print('Entry not in database.')
+
+        if comm == 'convert':
+            if not floss.input_validation(brand, fno):
+                print('Invalid input.')
+                
+            else:
+                action = floss.convert(brand, fno)
+                
+                if action:
+                    print('Possible conversion(s):')
+                    for r in action:
+                        print(f'DMC {r[0]} -> Anchor {r[1]} | {r[2]}')
+                        
+                else:
+                    print('No possible conversions.')
 
 # Closing application
 try:
