@@ -37,9 +37,9 @@ class Database:
     def flist(self):
         cursor = self.conn.cursor()
         cursor.execute("""
-                    SELECT * FROM public.stock
-                    ORDER BY fno;
-                    """)
+                       SELECT * FROM public.stock
+                       ORDER BY fno;
+                       """)
         
         try:
             output = cursor.fetchall()
@@ -76,7 +76,7 @@ class Database:
                            (fno,))
 
         try:
-            output = cursor.fetchall()
+            output = cursor.fetchone()
             cursor.close()
             return output
         
@@ -92,7 +92,7 @@ class Database:
             cursor.execute("""
                            SELECT DISTINCT dmc_to_anchor.dmc, stock.fno "anchor", dmc_to_anchor.hex
                            FROM public.stock INNER JOIN public.dmc_to_anchor ON (dmc_to_anchor.anchor = stock.fno)
-                           WHERE dmc_to_anchor.dmc = 'White';
+                           WHERE dmc_to_anchor.dmc = %s;
                            """,
                            (fno,))
         

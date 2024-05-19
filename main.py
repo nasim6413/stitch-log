@@ -1,32 +1,47 @@
 import re
 from database import *
 from config import DB_CONFIG
+from rich.prompt import Console, Prompt
+from rich.table import Table
    
 # Initialising connection
-print('STITCH TRACKER')
-
-floss = Database(DB_CONFIG)
 user_input = ''
+
+console = Console()
+console.print('STITCH TRACKER', style='bold deep_pink4')
+
+try:
+    floss = Database(DB_CONFIG)
+    console.print('Connection established successfully.', style='bold')
+except:
+    console.print('[red]ERROR:[/red] Cannot establish connection.')
 
 # Main loop
 while user_input != 'exit':
-    user_input = input('ENTER ACTION: ')
+    user_input = Prompt.ask('[bold]ENTER ACTION[/bold]')
     
     if user_input == 'list':
         action = floss.flist()
         if action:
-            print('Current stock:')
+            stock_list = Table(title='Current stock')
+            
+            stock_list.add_column('Brand', justify='center')
+            stock_list.add_column('Number', justify='center')
+            
             for item in action:
-                print(f'{item[0]} | {item[1]}')
+                stock_list.add_row(item[0], item[1])
+                
+            console.print(stock_list)
+            
         else:
-            print('Stock empty.')
+            console.print('[red]ERROR:[/red] Stock empty.')
 
     if user_input == 'count':
         fcount = floss.stock_count()
         print(f'Currently {fcount} floss in stock.')
 
     # Checks for command
-    pattern = r'(\w+)\s*(DMC|Anchor)\s*(\d{1,4}|B5200|ECRU|BLANC|White)'
+    pattern = r'(\w+)\s*(DMC|Anchor)\s*(\d{1,4}|B5200|ECRU|White)'
     match = re.match(pattern, user_input, re.IGNORECASE)
 
     if match:      
@@ -35,65 +50,80 @@ while user_input != 'exit':
         # Commands
         if comm == 'search':
             if not floss.input_validation(brand, fno):
-                print('Invalid input.')
+                console.print('[red]ERROR:[/red] Invalid input.')
                 
             else:
                 action = floss.search(brand, fno)
                 
                 if action:
-                    print('Match found:')
-                    for r in action:
-                        print(f'{r[0]} {r[1]} | {r[2]} | {r[3]}')
+                    print('Match found!')
+
+                    colour = f'#{action[3]}'
+                    console.print(f'{action[0]} {action[1]} | {action[2]} | [{colour}]{action[3]}[/{colour}]', highlight=False)
                         
                 else:
-                    print('No available stock.')
+                    console.print('[red]ERROR[/red]: No available stock.')
                     print('Checking for possible conversions...')
                     
                     action = floss.convert_stock(brand, fno)
                     
                     if action:
-                        print('Available conversions:')
-                        for r in action:
-                            print(f'DMC {r[0]} -> Anchor {r[1]} | {r[2]}')
-                
+                        conv_table = Table(title='Available conversions')
+                        
+                        conv_table.add_column('DMC', justify='center')
+                        conv_table.add_column('Anchor', justify='center')
+                        conv_table.add_column('Hex', justify='center')
+
+                        for item in action:
+                            colour = f'#{item[2]}'
+                            conv_table.add_row(item[0], item[1], f'[{colour}]{item[2]}[/{colour}]')
+
+                        console.print(conv_table)
                     else:
                         print('No available conversions.')
 
         if comm == 'add':
             if not floss.input_validation(brand, fno):
-                print('Not a valid input.')
+                console.print('[red]ERROR:[/red] Invalid input.')
                 
             else:
                 action = floss.add(brand, fno)
                 
                 if action:
-                    print('Entry added successfully.')
+                    console.print(f'Entry [green1]{brand} {fno}[/green1] added successfully.', highlight=False)
                     
                 else:
-                    print('Entry already in database.')
+                    console.print('Entry already in database.', style='dark_orange')
             
         if comm == 'del':
             if not floss.input_validation(brand, fno):
-                print('Invalid input.')
+                console.print('[red]ERROR:[/red] Invalid input.')
             
             else:
                 action = floss.delete(brand, fno)
                 if action:
-                    print('Entry deleted successfully.')
+                    console.print(f'Entry [red1]{brand} {fno}[/red1] deleted successfully.', highlight=False)
                 else:
-                    print('Entry not in database.')
+                    console.print('Entry not in database.', style='dark_orange')
 
         if comm == 'convert':
             if not floss.input_validation(brand, fno):
-                print('Invalid input.')
+                console.print('[red]ERROR:[/red] Invalid input.')
                 
             else:
                 action = floss.convert(brand, fno)
                 
-                if action:
-                    print('Possible conversion(s):')
-                    for r in action:
-                        print(f'DMC {r[0]} -> Anchor {r[1]} | {r[2]}')
+                if action:                     
+                    conv_table = Table(title='Possible conversions')
+                    conv_table.add_column('DMC', justify='center')
+                    conv_table.add_column('Anchor', justify='center')
+                    conv_table.add_column('Hex', justify='center')
+
+                    for item in action:
+                        colour = f'#{item[2]}'
+                        conv_table.add_row(item[0], item[1], f'[{colour}]{item[2]}[/{colour}]')
+
+                    console.print(conv_table)
                         
                 else:
                     print('No possible conversions.')
@@ -101,9 +131,9 @@ while user_input != 'exit':
 # Closing application
 try:
     floss.disconnect()
-    print('Connection closed successfully.')
-    
-    print('Exiting application.')
+    console.print('Connection closed successfully.', style='bold')
+
+    console.print('Exiting application.', style='bold')
     
 except:
-    print('Connection unable to close.')
+    console.print('[red]ERROR:[/red] Connection unable to close.')
