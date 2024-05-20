@@ -175,23 +175,3 @@ class Database:
         else: 
             cursor.close()
             return False  
-
-    # Checks validity of input
-    def input_validation(self, brand, fno):
-        if brand in BRANDS:
-        
-            cursor = self.conn.cursor()
-            
-            if brand == BRANDS[0]:
-                cursor.execute("""
-                            SELECT * FROM public.dmc
-                            WHERE dmc.fno = %s;
-                            """,
-                            (fno,))
-            
-                output = cursor.fetchone()
-                if not output:
-                    return False
-
-            return True
-        return False

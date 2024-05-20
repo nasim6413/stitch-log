@@ -8,7 +8,7 @@ from rich.table import Table
 user_input = ''
 
 console = Console()
-console.print('STITCH TRACKER', style='bold deep_pink4')
+console.print('STITCH TRACKER', style='indian_red')
 
 try:
     floss = Database(DB_CONFIG)
@@ -17,7 +17,7 @@ except:
     console.print('[red]ERROR:[/red] Cannot establish connection.')
 
 # Main loop
-while user_input != 'exit':
+while True:
     user_input = Prompt.ask('[bold]ENTER ACTION[/bold]')
     
     if user_input == 'list':
@@ -49,72 +49,23 @@ while user_input != 'exit':
         
         # Commands
         if comm == 'search':
-            if not floss.input_validation(brand, fno):
-                console.print('[red]ERROR:[/red] Invalid input.')
-                
-            else:
-                action = floss.search(brand, fno)
-                
-                if action:
-                    print('Match found!')
-
-                    colour = f'#{action[3]}'
-                    console.print(f'{action[0]} {action[1]} | {action[2]} | [{colour}]{action[3]}[/{colour}]', highlight=False)
-                        
-                else:
-                    console.print('[red]ERROR[/red]: No available stock.')
-                    print('Checking for possible conversions...')
-                    
-                    action = floss.convert_stock(brand, fno)
-                    
-                    if action:
-                        conv_table = Table(title='Available conversions')
-                        
-                        conv_table.add_column('DMC', justify='center')
-                        conv_table.add_column('Anchor', justify='center')
-                        conv_table.add_column('Hex', justify='center')
-
-                        for item in action:
-                            colour = f'#{item[2]}'
-                            conv_table.add_row(item[0], item[1], f'[{colour}]{item[2]}[/{colour}]')
-
-                        console.print(conv_table)
-                    else:
-                        print('No available conversions.')
-
-        if comm == 'add':
-            if not floss.input_validation(brand, fno):
-                console.print('[red]ERROR:[/red] Invalid input.')
-                
-            else:
-                action = floss.add(brand, fno)
-                
-                if action:
-                    console.print(f'Entry [green1]{brand} {fno}[/green1] added successfully.', highlight=False)
-                    
-                else:
-                    console.print('Entry already in database.', style='dark_orange')
+            action = floss.search(brand, fno)
             
-        if comm == 'del':
-            if not floss.input_validation(brand, fno):
-                console.print('[red]ERROR:[/red] Invalid input.')
-            
-            else:
-                action = floss.delete(brand, fno)
-                if action:
-                    console.print(f'Entry [red1]{brand} {fno}[/red1] deleted successfully.', highlight=False)
-                else:
-                    console.print('Entry not in database.', style='dark_orange')
+            if action:
+                console.print('Match found!')
 
-        if comm == 'convert':
-            if not floss.input_validation(brand, fno):
-                console.print('[red]ERROR:[/red] Invalid input.')
-                
+                colour = f'#{action[3]}'
+                console.print(f'{action[0]} {action[1]} | {action[2]} | [{colour}]{action[3]}[/{colour}]', highlight=False)
+                    
             else:
-                action = floss.convert(brand, fno)
+                console.print('[red]ERROR[/red]: No available stock.')
+                print('Checking for possible conversions...')
                 
-                if action:                     
-                    conv_table = Table(title='Possible conversions')
+                action = floss.convert_stock(brand, fno)
+                
+                if action:
+                    conv_table = Table(title='Available conversions')
+                    
                     conv_table.add_column('DMC', justify='center')
                     conv_table.add_column('Anchor', justify='center')
                     conv_table.add_column('Hex', justify='center')
@@ -124,9 +75,45 @@ while user_input != 'exit':
                         conv_table.add_row(item[0], item[1], f'[{colour}]{item[2]}[/{colour}]')
 
                     console.print(conv_table)
-                        
                 else:
-                    print('No possible conversions.')
+                    print('No available conversions.')
+
+        if comm == 'add':
+            action = floss.add(brand, fno)
+            
+            if action:
+                console.print(f'Entry [green1]{brand} {fno}[/green1] added successfully.', highlight=False)
+                
+            else:
+                console.print(f'Entry [dark_orange]{brand} {fno}[/dark_orange] already in database.', highlight=False)
+            
+        if comm == 'del':
+            action = floss.delete(brand, fno)
+            if action:
+                console.print(f'Entry [red1]{brand} {fno}[/red1] deleted successfully.', highlight=False)
+            else:
+                console.print(f'Entry [dark_orange]{brand} {fno}[/dark_orange] not in database.', highlight=False)
+
+        if comm == 'convert':
+            action = floss.convert(brand, fno)
+            
+            if action:                     
+                conv_table = Table(title='Possible conversions')
+                conv_table.add_column('DMC', justify='center')
+                conv_table.add_column('Anchor', justify='center')
+                conv_table.add_column('Hex', justify='center')
+
+                for item in action:
+                    colour = f'#{item[2]}'
+                    conv_table.add_row(item[0], item[1], f'[{colour}]{item[2]}[/{colour}]')
+
+                console.print(conv_table)
+                    
+            else:
+                print('No possible conversions.')
+                
+    if user_input == 'exit':
+        break
 
 # Closing application
 try:
