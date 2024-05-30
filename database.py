@@ -20,8 +20,12 @@ def re_input(match):
     if fno.capitalize() == 'White' or fno.capitalize() == 'Ecru':
         fno = fno.capitalize()
         
-    if fno == 'b5200':
-        fno = 'B5200'
+    # Fixes pattern numbers that include letter
+    fno_pattern = r'(.)(\d{1,4})'
+    fno_match = re.match(fno_pattern, fno, re.IGNORECASE)
+
+    if fno_match:
+        fno = fno_match.group(1).upper() + fno_match.group(2)
     
     return comm, brand, fno
 
@@ -38,7 +42,7 @@ class Database:
         cursor = self.conn.cursor()
         cursor.execute("""
                        SELECT * FROM public.stock
-                       ORDER BY fno;
+                       ORDER BY brand, fno;
                        """)
         
         try:
@@ -67,21 +71,23 @@ class Database:
         cursor = self.conn.cursor()
 
         #NOTE: Does not support Anchor
-        if brand == BRANDS[0]:
+        if brand == BRANDS[0]:            
             cursor.execute("""
-                           SELECT stock.*, dmc.name, dmc.hex
-                           FROM public.stock INNER JOIN public.dmc ON (stock.fno = dmc.fno)
-                           WHERE stock.fno = %s;
+                           SELECT stock.*
+                           FROM public.stock 
+                           WHERE stock.fno = %s
                            """, 
                            (fno,))
 
         try:
             output = cursor.fetchone()
-            cursor.close()
-            return output
-        
+            if output:
+                cursor.close()
+                return True
+            else: # Empty output
+                return False
+            
         except:
-            cursor.close()
             return False
         
     # Returns possible conversions for specified floss number according to what is available in stock        
@@ -91,7 +97,9 @@ class Database:
         if brand == BRANDS[0]:
             cursor.execute("""
                            SELECT DISTINCT dmc_to_anchor.dmc, stock.fno "anchor", dmc_to_anchor.hex
-                           FROM public.stock INNER JOIN public.dmc_to_anchor ON (dmc_to_anchor.anchor = stock.fno)
+                           FROM public.stock 
+                                INNER JOIN public.dmc_to_anchor 
+                                ON (dmc_to_anchor.anchor = stock.fno)
                            WHERE dmc_to_anchor.dmc = %s;
                            """,
                            (fno,))

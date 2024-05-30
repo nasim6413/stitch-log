@@ -41,7 +41,7 @@ while True:
         print(f'Currently {fcount} floss in stock.')
 
     # Checks for command
-    pattern = r'(\w+)\s*(DMC|Anchor)\s*(\d{1,4}|B5200|ECRU|White)'
+    pattern = r'(\w+)\s*(DMC|Anchor)\s*(\w?\d{1,4}|B5200|ECRU|White)'
     match = re.match(pattern, user_input, re.IGNORECASE)
 
     if match:      
@@ -52,13 +52,10 @@ while True:
             action = floss.search(brand, fno)
             
             if action:
-                console.print('Match found!')
-
-                colour = f'#{action[3]}'
-                console.print(f'{action[0]} {action[1]} | {action[2]} | [{colour}]{action[3]}[/{colour}]', highlight=False)
+                console.print(f'Match found! [green]{brand} {fno}[/green] available in database.', highlight=False)
                     
             else:
-                console.print('[red]ERROR[/red]: No available stock.')
+                console.print(f'[red]ERROR[/red]: [red]{brand} {fno}[/red] is not in the available stock.', highlight=False)
                 print('Checking for possible conversions...')
                 
                 action = floss.convert_stock(brand, fno)
