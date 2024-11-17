@@ -20,6 +20,10 @@ except:
 while True:
     user_input = Prompt.ask('[bold]ENTER ACTION[/bold]')
     
+    if user_input == 'help':
+        console.print('list, count, convert <brand> <number>, search <brand> <number>, add <brand> <number>, del <brand> <number>')
+        console.print('Conversions currently only available for DMC to Anchor!')
+    
     if user_input == 'list':
         action = floss.flist()
         if action:
