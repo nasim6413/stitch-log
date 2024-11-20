@@ -4,12 +4,11 @@ from config import DB_CONFIG
 from rich.prompt import Console, Prompt
 from rich.table import Table
    
-# Initialising connection
-user_input = ''
-
+# Set up console
 console = Console()
 console.print('STITCH TRACKER', style='indian_red')
 
+# Initialising connection
 try:
     floss = Database(DB_CONFIG)
     console.print('Connection established successfully.', style='bold')
