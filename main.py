@@ -7,20 +7,37 @@ from rich.table import Table
 console = Console()
 console.print('STITCH TRACKER', style='indian_red')
 
+# Command list
+commands = {'list':'n/a',
+            'count':'n/a',
+            'convert':'<brand> <number>',
+            'search':'<brand> <number>',
+            'add' : '<brand> <number>',
+            'del' : '<brand> <number>'}
+
 # Initialising connection
 try:
     floss = Database()
     console.print('Connection established successfully.', style='bold')
+    console.print('Type "help" for list of commands.')
 except:
     console.print('[red]ERROR:[/red] Cannot establish connection.')
 
 # Main loop
-while True:
+while floss:
     user_input = Prompt.ask('[bold]ENTER ACTION[/bold]')
     
     if user_input == 'help':
-        console.print('list, count, convert <brand> <number>, search <brand> <number>, add <brand> <number>, del <brand> <number>')
-        console.print('Conversions currently only available for DMC to Anchor!')
+        command_list = Table(title='Actions')
+        
+        command_list.add_column('Command', justify='center')
+        command_list.add_column('Parameters', justify='center')
+        
+        for key, value in commands.items():
+            command_list.add_row(key, value)
+            
+        console.print(command_list)
+        console.print('[bold]NOTE:[/bold] Conversions currently only available for DMC to Anchor!')
     
     if user_input == 'list':
         action = floss.flist()
