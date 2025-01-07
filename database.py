@@ -1,4 +1,4 @@
-import psycopg2
+import sqlite3
 import re
 
 BRANDS = ['DMC', 'Anchor']
@@ -30,8 +30,30 @@ def re_input(match):
     return comm, brand, fno
 
 class Database:
-    def __init__(self, config):
-        self.conn = psycopg2.connect(**config)
+    def __init__(self):
+        self.conn = sqlite3.connect("floss.db")
+        
+        cursor = self.conn.cursor()
+        
+        # Create table if it doesn't already exist
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS dmc_to_anchor (
+            dmc TEXT NOT NULL PRIMARY KEY,
+            anchor TEXT NOT NULL,
+            hex TEXT,
+            fname TEXT
+        );
+        """)
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS stock (
+                brand TEXT NOT NULL,
+                fno TEXT NOT NULL
+            );
+        """)
+
+        self.conn.commit()
+        cursor.close()
     
     def disconnect(self):
         self.conn.close()
@@ -41,7 +63,7 @@ class Database:
     def flist(self):
         cursor = self.conn.cursor()
         cursor.execute("""
-                       SELECT * FROM public.stock
+                       SELECT * FROM stock
                        ORDER BY brand, fno;
                        """)
         
@@ -58,7 +80,7 @@ class Database:
     def stock_count(self):
         cursor = self.conn.cursor()
         cursor.execute("""
-                       SELECT * FROM public.stock
+                       SELECT * FROM stock
                        """)
         
         stock_no = len(cursor.fetchall())
@@ -74,8 +96,8 @@ class Database:
         if brand == BRANDS[0]:            
             cursor.execute("""
                            SELECT stock.*
-                           FROM public.stock 
-                           WHERE stock.fno = %s
+                           FROM stock 
+                           WHERE stock.fno = ?
                            """, 
                            (fno,))
 
@@ -96,11 +118,11 @@ class Database:
 
         if brand == BRANDS[0]:
             cursor.execute("""
-                           SELECT DISTINCT dmc_to_anchor.dmc, stock.fno "anchor", dmc_to_anchor.hex
-                           FROM public.stock 
-                                INNER JOIN public.dmc_to_anchor 
+                           SELECT DISTINCT dmc_to_anchor.dmc, stock.fno AS anchor, dmc_to_anchor.hex
+                           FROM stock 
+                                INNER JOIN dmc_to_anchor 
                                 ON (dmc_to_anchor.anchor = stock.fno)
-                           WHERE dmc_to_anchor.dmc = %s;
+                           WHERE dmc_to_anchor.dmc = ?;
                            """,
                            (fno,))
         
@@ -120,8 +142,8 @@ class Database:
         if brand == BRANDS[0]:
             cursor.execute("""
                         SELECT dmc, anchor, hex
-                        FROM public.dmc_to_anchor
-                        WHERE dmc_to_anchor.dmc = %s;
+                        FROM dmc_to_anchor
+                        WHERE dmc_to_anchor.dmc = ?;
                         """,
                         (fno,))
             
@@ -139,8 +161,8 @@ class Database:
         cursor = self.conn.cursor()
 
         cursor.execute("""
-                       SELECT * FROM public.stock 
-                       WHERE stock.brand = %s AND stock.fno = %s;
+                       SELECT * FROM stock 
+                       WHERE stock.brand = ? AND stock.fno = ?;
                        """, 
                        (brand, fno,))
         
@@ -150,8 +172,8 @@ class Database:
 
         else:
             cursor.execute("""
-                           INSERT INTO public.stock (brand, fno)
-                           VALUES (%s, %s);
+                           INSERT INTO stock (brand, fno)
+                           VALUES (?, ?);
                            """,
                            (brand, fno))
             self.conn.commit()
@@ -164,15 +186,15 @@ class Database:
         cursor = self.conn.cursor()
 
         cursor.execute("""
-                       SELECT * FROM public.stock 
-                       WHERE stock.brand = %s AND stock.fno = %s;
+                       SELECT * FROM stock 
+                       WHERE stock.brand = ? AND stock.fno = ?;
                        """, 
                        (brand, fno,))
         
         if cursor.fetchone():
             cursor.execute("""
-                           DELETE FROM public.stock
-                           WHERE stock.brand = %s AND stock.fno = %s;
+                           DELETE FROM stock
+                           WHERE stock.brand = ? AND stock.fno = ?;
                            """,
                           (brand, fno))
             self.conn.commit()

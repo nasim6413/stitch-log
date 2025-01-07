@@ -1,6 +1,5 @@
 import re
 from database import *
-from config import DB_CONFIG
 from rich.prompt import Console, Prompt
 from rich.table import Table
    
@@ -10,7 +9,7 @@ console.print('STITCH TRACKER', style='indian_red')
 
 # Initialising connection
 try:
-    floss = Database(DB_CONFIG)
+    floss = Database()
     console.print('Connection established successfully.', style='bold')
 except:
     console.print('[red]ERROR:[/red] Cannot establish connection.')
