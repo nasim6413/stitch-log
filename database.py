@@ -6,9 +6,8 @@ class Database:
     def __init__(self):
         self.brands = ['DMC', 'Anchor']
 
-        self.conn = self.connect()
-        
-        cursor = self.conn.cursor()
+        conn = sqlite3.connect('floss.db')
+        cursor = conn.cursor()
                 
         # Checks whether database is empty
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
@@ -16,13 +15,13 @@ class Database:
         
         # If database empty, performs setup
         if not tables:
-            self.set_up()
+            self.set_up(cursor)
             
-        self.connection = True
+        conn.commit()
+        cursor.close()
+        conn.close()
         
-    def set_up(self):
-        cursor = self.conn.cursor()
-        
+    def set_up(self, cursor):        
         # Creating tables if it doesn't already exist
         cursor.execute("""
             CREATE TABLE dmc_to_anchor (
@@ -62,28 +61,21 @@ class Database:
                 fno TEXT NOT NULL
             );
         """)
-
-        self.conn.commit()
-        cursor.close()
     
-    # Connects to database
     def connect(self):
         try:
-            conn = sqlite3.connect("floss.db")           
+            conn = sqlite3.connect('floss.db')
             return conn
-        
         except:
             return False
         
-    # Disconnects database
-    def disconnect(self):
-        self.conn.close()
-        return
-    
     # Fixes input
-    def re_input(self, match):
-        brand = match.group(2)
-        fno = match.group(3)
+    def re_input(self, item):
+        pattern = r'(DMC|Anchor)\s*(\w?\d{1,4}|B5200|ECRU|White)'
+        match = re.match(pattern, item, re.IGNORECASE)
+        
+        brand = match.group(1)
+        fno = match.group(2)
         
         if brand.upper() == self.brands[0]:
             brand = brand.upper() 
@@ -104,8 +96,8 @@ class Database:
         return brand, fno
         
     # Returns list of current stock
-    def flist(self):
-        cursor = self.conn.cursor()
+    def flist(self, conn):
+        cursor = conn.cursor()
         cursor.execute("""
                        SELECT * FROM stock
                        ORDER BY brand, fno;
@@ -121,8 +113,8 @@ class Database:
             return False
 
     # Returns count of items in stock
-    def stock_count(self):
-        cursor = self.conn.cursor()
+    def stock_count(self, conn):
+        cursor = conn.cursor()
         cursor.execute("""
                        SELECT * FROM stock
                        """)
@@ -133,8 +125,8 @@ class Database:
         return stock_no
 
     # Returns info for specified floss number
-    def search(self, brand, fno):
-        cursor = self.conn.cursor()
+    def search(self, conn, brand, fno):
+        cursor = conn.cursor()
            
         cursor.execute("""
                         SELECT stock.*
@@ -147,7 +139,7 @@ class Database:
             output = cursor.fetchone()
             if output:
                 cursor.close()
-                return True
+                return output
             else: # Empty output
                 return False
             
@@ -155,8 +147,8 @@ class Database:
             return False
         
     # Returns possible conversion for specified floss number
-    def gen_convert(self, brand, fno):
-        cursor = self.conn.cursor()
+    def gen_convert(self, conn, brand, fno):
+        cursor = conn.cursor()
 
         if brand == self.brands[0]:
             cursor.execute("""
@@ -184,8 +176,8 @@ class Database:
             return False
             
     # Returns possible conversions for specified floss number according to what is available in stock        
-    def stock_convert(self, brand, fno):
-        cursor = self.conn.cursor()
+    def stock_convert(self, conn, brand, fno):
+        cursor = conn.cursor()
 
         if brand == self.brands[0]:
             cursor.execute("""
@@ -217,8 +209,8 @@ class Database:
             return False
         
     # Adds to stock
-    def add(self, brand, fno):
-        cursor = self.conn.cursor()
+    def add(self, conn, brand, fno):
+        cursor = conn.cursor()
 
         cursor.execute("""
                        SELECT * FROM stock 
@@ -236,14 +228,14 @@ class Database:
                            VALUES (?, ?);
                            """,
                            (brand, fno))
-            self.conn.commit()
-
+            
+            conn.commit()
             cursor.close()
             return True
         
     # Deletes from stock
-    def delete(self, brand, fno):
-        cursor = self.conn.cursor()
+    def delete(self, conn, brand, fno):
+        cursor = conn.cursor()
 
         cursor.execute("""
                        SELECT * FROM stock 
@@ -257,8 +249,8 @@ class Database:
                            WHERE stock.brand = ? AND stock.fno = ?;
                            """,
                           (brand, fno))
-            self.conn.commit()
             
+            conn.commit()
             cursor.close()
             return True   
         

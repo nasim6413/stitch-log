@@ -1,0 +1,57 @@
+div {
+  margin: 10;
+  width:300px;
+  margin:auto;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+
+th, td {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+h1 {
+  margin-bottom: 5px;
+}
+
+a:link, a:visited {
+  background-color: tomato;
+  color: white;
+  padding: 5px 5px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+a:hover, a:active {
+  background-color: pink;
+}
+
+.input {
+  margin: 10;
+  padding: 10px;
+}
+
+.button {
+  border: none;
+  color: white;
+  padding: 20px 32px;
+  margin: 5;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+#button_add {
+  background-color: mediumseagreen;
+}
+
+#button_delete{
+  background-color: tomato;
+}

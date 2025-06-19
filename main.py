@@ -1,144 +1,83 @@
-import re
-from database import *
-from rich.prompt import Console, Prompt
-from rich.table import Table
-   
-# Set up console
-console = Console()
-console.print('STITCH TRACKER', style='indian_red')
+from flask import Flask, render_template, request, redirect, url_for, g
+from database import Database
 
-# Command list
-commands = {'list':'n/a',
-            'count':'n/a',
-            'convert':'<brand> <number>',
-            'search':'<brand> <number>',
-            'add' : '<brand> <number>',
-            'del' : '<brand> <number>',
-            'exit' : 'n/a'}
 
-# Initialising connection
+app = Flask(__name__)
 floss = Database()
-if floss.connection:
-    console.print('Connection established successfully.', style='bold')
-    console.print('Type "help" for list of commands.')
-else:
-    console.print('[red]ERROR:[/red] Cannot establish connection.')
 
-# Main loop
-while floss:
-    user_input = Prompt.ask('[bold]ENTER ACTION[/bold]')
+def get_db():
+    if 'db' not in g:
+        g.db = floss.connect()
+        return g.db if g.db else False
+
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+    conn = get_db()
+    count = floss.stock_count(conn)
     
-    if user_input == 'help':
-        command_list = Table(title='Actions')
+    if request.method == 'POST':
+        item = request.form['floss']
         
-        command_list.add_column('Command', justify='center')
-        command_list.add_column('Parameters', justify='center')
-        
-        for key, value in commands.items():
-            command_list.add_row(key, value)
+        if item:
+            brand, fno = floss.re_input(item)
+            action = request.form['button']
             
-        console.print(command_list)
-        console.print('[bold]NOTE:[/bold] Conversions currently only available for DMC to Anchor!')
-    
-    if user_input == 'list':
-        action = floss.flist()
-        if action:
-            stock_list = Table(title='Current stock')
-            
-            stock_list.add_column('Brand', justify='center')
-            stock_list.add_column('Number', justify='center')
-            
-            for item in action:
-                stock_list.add_row(item[0], item[1])
+            if action == 'search':
+                rows = floss.search(conn, brand, fno)
                 
-            console.print(stock_list)
-            
-        else:
-            console.print('[red]ERROR:[/red] Stock empty.')
-
-    if user_input == 'count':
-        fcount = floss.stock_count()
-        print(f'Currently {fcount} floss in stock.')
-
-    # Checks for command
-    pattern = r'(\w+)\s*(DMC|Anchor)\s*(\w?\d{1,4}|B5200|ECRU|White)'
-    match = re.match(pattern, user_input, re.IGNORECASE)
-
-    if match:
-        comm = match.group(1).lower()
-        brand, fno = floss.re_input(match)
-        
-        # Commands
-        if comm == 'search':
-            output = floss.search(brand, fno)
-            
-            if output:
-                console.print(f'Match found! [green]{brand} {fno}[/green] available in database.', highlight=False)
-                    
-            else:
-                console.print(f'[red]ERROR[/red]: [red]{brand} {fno}[/red] is not in the available stock.', highlight=False)
-                print('Checking for possible conversions...')
+                if rows:
+                    message = f'Floss {brand} {fno} in stock!'
+                    return render_template('home.html', message=message, count=count)
                 
-                output = floss.stock_convert(brand, fno)
-                
-                if output:
-                    conv_table = Table(title='Available conversions')
-                    
-                    conv_table.add_column('DMC', justify='center')
-                    conv_table.add_column('Anchor', justify='center')
-                    conv_table.add_column('Hex', justify='center')
-
-                    for item in output:
-                        colour = f'#{item[2]}'
-                        conv_table.add_row(item[0], item[1], f'[{colour}]{item[2]}[/{colour}]')
-
-                    console.print(conv_table)
                 else:
-                    print('No available conversions.')
-
-        if comm == 'add':
-            action = floss.add(brand, fno)
-            
-            if action:
-                console.print(f'Entry [green1]{brand} {fno}[/green1] added successfully.', highlight=False)
-                
-            else:
-                console.print(f'Entry [dark_orange]{brand} {fno}[/dark_orange] already in database.', highlight=False)
-            
-        if comm == 'del':
-            action = floss.delete(brand, fno)
-            if action:
-                console.print(f'Entry [red1]{brand} {fno}[/red1] deleted successfully.', highlight=False)
-            else:
-                console.print(f'Entry [dark_orange]{brand} {fno}[/dark_orange] not in database.', highlight=False)
-
-        if comm == 'convert':
-            output = floss.gen_convert(brand, fno)
-            
-            if output:       
-                print(output)              
-                conv_table = Table(title='Possible conversions')
-                conv_table.add_column('DMC', justify='center')
-                conv_table.add_column('Anchor', justify='center')
-                conv_table.add_column('Hex', justify='center')
-
-                for item in output:
-                    colour = f'#{item[2]}'
-                    conv_table.add_row(item[0], item[1], f'[{colour}]{item[2]}[/{colour}]')
-
-                console.print(conv_table)
+                    rows = floss.stock_convert(conn, brand, fno)
                     
-            else:
-                print('No possible conversions.')
+                    if rows:
+                        message = f'Floss {brand} {fno} not in stock. Possible conversions available:'
+                    
+                    else:
+                        message = f'Floss {brand} {fno} not in stock and no possible conversions are available.'
+                        
+            if action == 'convert':
+                rows = floss.gen_convert(conn, brand, fno)
+                message = f'Possible conversions for floss {brand} {fno}:'
                 
-    if user_input == 'exit':
-        break
-
-# Closing application
-try:
-    floss.disconnect()
-    console.print('Connection closed successfully.', style='bold')
-    console.print('Exiting application.', style='bold')
+        return render_template('home.html', message=message, count=count, rows=rows)
     
-except:
-    console.print('[red]ERROR:[/red] Connection unable to close.')
+    return render_template('home.html', count=count)
+
+# Stock page
+@app.route('/stock', methods=['GET', 'POST'])
+def stock():
+    conn = get_db()
+    
+    if request.method == 'POST':
+        item = request.form['floss']
+        
+        if item:
+            brand, fno = floss.re_input(item)
+            
+            action = request.form['button']
+            
+            if action == 'add':
+                floss.add(conn, brand, fno)
+            if action == 'delete':
+                floss.delete(conn, brand, fno)
+            
+            return redirect(url_for('stock'))
+        else:
+            return redirect(url_for('stock'))
+        
+    rows = floss.flist(conn)
+    return render_template('stock.html', rows=rows)
+
+@app.teardown_appcontext
+def teardown_db(exception):
+    db = g.pop('db', None)
+
+    if db is not None:
+        db.close()
+
+if __name__ == '__main__':
+    app.run()

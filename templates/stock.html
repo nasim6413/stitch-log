@@ -1,0 +1,34 @@
+{% extends 'home.html' %}
+
+<title>Floss Stock</title>
+{% block body %}
+
+<div>
+    <form method="POST">
+        <input type="text" name="floss" placeholder="Enter name">
+        <button type="submit" name="button" value="add" id="button_add">Add</button>
+        <button type="submit" name="button" value="delete" id="button_delete">Delete</button>
+    </form>
+</div>
+
+<div>
+  <p>{{message}}</p>
+<table>
+  <thead>
+    <tr>
+      <th>Brand</th>
+      <th>Number</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+      <tr>               
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% endblock %}
