@@ -1,52 +1,63 @@
 import sqlite3
+import pandas as pd
 import re
-
-BRANDS = ['DMC', 'Anchor']
-
-# Fixes user input
-def re_input(match):
-    comm = match.group(1)
-    comm = comm.lower()
-    
-    brand = match.group(2)
-    fno = match.group(3)
-    
-    if brand.upper() == BRANDS[0]:
-        brand = brand.upper() 
-         
-    if brand.capitalize() == BRANDS[1]:
-        brand = brand.capitalize()
-    
-    if fno.capitalize() == 'White' or fno.capitalize() == 'Ecru':
-        fno = fno.capitalize()
-        
-    # Fixes pattern numbers that include letter
-    fno_pattern = r'(.)(\d{1,4})'
-    fno_match = re.match(fno_pattern, fno, re.IGNORECASE)
-
-    if fno_match:
-        fno = fno_match.group(1).upper() + fno_match.group(2)
-    
-    return comm, brand, fno
 
 class Database:
     def __init__(self):
-        self.conn = sqlite3.connect("floss.db")
+        self.brands = ['DMC', 'Anchor']
+
+        self.conn = self.connect()
         
         cursor = self.conn.cursor()
+                
+        # Checks whether database is empty
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
         
-        # Create table if it doesn't already exist
+        # If database empty, performs setup
+        if not tables:
+            self.set_up()
+            
+        self.connection = True
+        
+    def set_up(self):
+        cursor = self.conn.cursor()
+        
+        # Creating tables if it doesn't already exist
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS dmc_to_anchor (
-            dmc TEXT NOT NULL PRIMARY KEY,
+            CREATE TABLE dmc_to_anchor (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            dmc TEXT NOT NULL,
             anchor TEXT NOT NULL,
             hex TEXT,
-            fname TEXT
-        );
+            colour TEXT
+            );
         """)
         
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS stock (
+            CREATE TABLE anchor_to_dmc (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            anchor TEXT NOT NULL,
+            dmc TEXT NOT NULL,
+            hex TEXT,
+            colour TEXT
+            );
+        """)
+        
+        # Opens CSVs and drops rows with no conversions
+        dmc_to_anchor = pd.read_csv('database/dmc_to_anchor.csv', names=['dmc', 'anchor', 'hex', 'colour'])
+        dmc_to_anchor = dmc_to_anchor[dmc_to_anchor.anchor != 'NA']
+               
+        anchor_to_dmc = pd.read_csv('database/anchor_to_dmc.csv', names=['anchor', 'dmc', 'hex', 'colour'])
+        anchor_to_dmc = anchor_to_dmc[anchor_to_dmc.dmc != 'NA']
+        
+        # Populate conversion tables
+        dmc_to_anchor.to_sql('dmc_to_anchor', self.conn, if_exists='append', index = False)
+        anchor_to_dmc.to_sql('anchor_to_dmc', self.conn, if_exists='append', index = False)
+        
+        # Creates stock table
+        cursor.execute("""
+            CREATE TABLE stock (
                 brand TEXT NOT NULL,
                 fno TEXT NOT NULL
             );
@@ -55,9 +66,42 @@ class Database:
         self.conn.commit()
         cursor.close()
     
+    # Connects to database
+    def connect(self):
+        try:
+            conn = sqlite3.connect("floss.db")           
+            return conn
+        
+        except:
+            return False
+        
+    # Disconnects database
     def disconnect(self):
         self.conn.close()
         return
+    
+    # Fixes input
+    def re_input(self, match):
+        brand = match.group(2)
+        fno = match.group(3)
+        
+        if brand.upper() == self.brands[0]:
+            brand = brand.upper() 
+            
+        if brand.capitalize() == self.brands[1]:
+            brand = brand.capitalize()
+        
+        if fno.capitalize() == 'White' or fno.capitalize() == 'Ecru':
+            fno = fno.capitalize()
+            
+        # Fixes pattern numbers that include letter
+        fno_pattern = r'(.)(\d{1,4})'
+        fno_match = re.match(fno_pattern, fno, re.IGNORECASE)
+
+        if fno_match:
+            fno = fno_match.group(1).upper() + fno_match.group(2)
+        
+        return brand, fno
         
     # Returns list of current stock
     def flist(self):
@@ -91,15 +135,13 @@ class Database:
     # Returns info for specified floss number
     def search(self, brand, fno):
         cursor = self.conn.cursor()
-
-        #NOTE: Does not support Anchor
-        if brand == BRANDS[0]:            
-            cursor.execute("""
-                           SELECT stock.*
-                           FROM stock 
-                           WHERE stock.fno = ?
-                           """, 
-                           (fno,))
+           
+        cursor.execute("""
+                        SELECT stock.*
+                        FROM stock 
+                        WHERE stock.brand = ? AND stock.fno = ?
+                        """, 
+                        (brand, fno,))
 
         try:
             output = cursor.fetchone()
@@ -112,17 +154,56 @@ class Database:
         except:
             return False
         
-    # Returns possible conversions for specified floss number according to what is available in stock        
-    def convert_stock(self, brand, fno):
+    # Returns possible conversion for specified floss number
+    def gen_convert(self, brand, fno):
         cursor = self.conn.cursor()
 
-        if brand == BRANDS[0]:
+        if brand == self.brands[0]:
+            cursor.execute("""
+                        SELECT dmc, anchor, hex
+                        FROM dmc_to_anchor
+                        WHERE dmc_to_anchor.dmc = ?;
+                        """,
+                        (fno,))
+            
+        if brand == self.brands[1]:
+            cursor.execute("""
+                        SELECT anchor, dmc, hex
+                        FROM anchor_to_dmc
+                        WHERE anchor_to_dmc.anchor = ?;
+                        """,
+                        (fno,))
+            
+        try:
+            output = cursor.fetchall()
+            cursor.close()
+            return output
+
+        except:
+            cursor.close()
+            return False
+            
+    # Returns possible conversions for specified floss number according to what is available in stock        
+    def stock_convert(self, brand, fno):
+        cursor = self.conn.cursor()
+
+        if brand == self.brands[0]:
             cursor.execute("""
                            SELECT DISTINCT dmc_to_anchor.dmc, stock.fno AS anchor, dmc_to_anchor.hex
                            FROM stock 
                                 INNER JOIN dmc_to_anchor 
                                 ON (dmc_to_anchor.anchor = stock.fno)
                            WHERE dmc_to_anchor.dmc = ?;
+                           """,
+                           (fno,))
+            
+        if brand == self.brands[1]:
+            cursor.execute("""
+                           SELECT DISTINCT anchor_to_dmc.anchor, stock.fno AS anchor, anchor_to_dmc.hex
+                           FROM stock 
+                                INNER JOIN anchor_to_dmc 
+                                ON (anchor_to_dmc.dmc = stock.fno)
+                           WHERE anchor_to_dmc.anchor = ?;
                            """,
                            (fno,))
         
@@ -134,27 +215,6 @@ class Database:
         except:
             cursor.close()
             return False
-    
-    # Returns possible conversion for specified floss number
-    def convert(self, brand, fno):
-        cursor = self.conn.cursor()
-
-        if brand == BRANDS[0]:
-            cursor.execute("""
-                        SELECT dmc, anchor, hex
-                        FROM dmc_to_anchor
-                        WHERE dmc_to_anchor.dmc = ?;
-                        """,
-                        (fno,))
-            
-            try:
-                output = cursor.fetchall()
-                cursor.close()
-                return output
-
-            except:
-                cursor.close()
-                return False
         
     # Adds to stock
     def add(self, brand, fno):

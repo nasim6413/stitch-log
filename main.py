@@ -13,14 +13,15 @@ commands = {'list':'n/a',
             'convert':'<brand> <number>',
             'search':'<brand> <number>',
             'add' : '<brand> <number>',
-            'del' : '<brand> <number>'}
+            'del' : '<brand> <number>',
+            'exit' : 'n/a'}
 
 # Initialising connection
-try:
-    floss = Database()
+floss = Database()
+if floss.connection:
     console.print('Connection established successfully.', style='bold')
     console.print('Type "help" for list of commands.')
-except:
+else:
     console.print('[red]ERROR:[/red] Cannot establish connection.')
 
 # Main loop
@@ -63,30 +64,31 @@ while floss:
     pattern = r'(\w+)\s*(DMC|Anchor)\s*(\w?\d{1,4}|B5200|ECRU|White)'
     match = re.match(pattern, user_input, re.IGNORECASE)
 
-    if match:      
-        comm, brand, fno = re_input(match)
+    if match:
+        comm = match.group(1).lower()
+        brand, fno = floss.re_input(match)
         
         # Commands
         if comm == 'search':
-            action = floss.search(brand, fno)
+            output = floss.search(brand, fno)
             
-            if action:
+            if output:
                 console.print(f'Match found! [green]{brand} {fno}[/green] available in database.', highlight=False)
                     
             else:
                 console.print(f'[red]ERROR[/red]: [red]{brand} {fno}[/red] is not in the available stock.', highlight=False)
                 print('Checking for possible conversions...')
                 
-                action = floss.convert_stock(brand, fno)
+                output = floss.stock_convert(brand, fno)
                 
-                if action:
+                if output:
                     conv_table = Table(title='Available conversions')
                     
                     conv_table.add_column('DMC', justify='center')
                     conv_table.add_column('Anchor', justify='center')
                     conv_table.add_column('Hex', justify='center')
 
-                    for item in action:
+                    for item in output:
                         colour = f'#{item[2]}'
                         conv_table.add_row(item[0], item[1], f'[{colour}]{item[2]}[/{colour}]')
 
@@ -111,15 +113,16 @@ while floss:
                 console.print(f'Entry [dark_orange]{brand} {fno}[/dark_orange] not in database.', highlight=False)
 
         if comm == 'convert':
-            action = floss.convert(brand, fno)
+            output = floss.gen_convert(brand, fno)
             
-            if action:                     
+            if output:       
+                print(output)              
                 conv_table = Table(title='Possible conversions')
                 conv_table.add_column('DMC', justify='center')
                 conv_table.add_column('Anchor', justify='center')
                 conv_table.add_column('Hex', justify='center')
 
-                for item in action:
+                for item in output:
                     colour = f'#{item[2]}'
                     conv_table.add_row(item[0], item[1], f'[{colour}]{item[2]}[/{colour}]')
 
@@ -135,7 +138,6 @@ while floss:
 try:
     floss.disconnect()
     console.print('Connection closed successfully.', style='bold')
-
     console.print('Exiting application.', style='bold')
     
 except:
