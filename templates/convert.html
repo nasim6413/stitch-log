@@ -5,7 +5,7 @@
 {% block body %}
     <div>
         <form method="POST">
-            <input type="text" name="floss" placeholder="Enter name">
+            <input type="text" name="floss" placeholder="Enter name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
             <button class="button" type="submit" name="button" value="convert" id="button_convert">Convert</button>
         </form>
     </div>
@@ -32,7 +32,10 @@
                 <tr>
                     <td>{{ row[0] }}</td>
                     <td>{{ row[1] }}</td>
-                    <td style="color: #{{ row[2] }}">{{ row[2] }}</td>
+                    <td style="display: flex; align-items: center;">
+                    <span style="color: black; flex: 1;">{{ row[2] }}</span>
+                    <span style="width: 60px; height: 20px; background-color: #{{ row[2] }}; margin-left: 10px; border: 1px solid #ccc;"></span>
+                    </td>
                     <td style="color: {{ 'green' if row[3] else 'red' }}">
                         {{ 'available' if row[3] else 'not available' }}
                     </td>

@@ -136,7 +136,7 @@ th, td {
     border-bottom: 1px solid #ddd;
 }
 
-tr:hover {
+tbody tr:hover {
   background-color: rgba(211, 127, 189, 0.664);
 }
 
