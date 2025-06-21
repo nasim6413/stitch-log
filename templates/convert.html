@@ -1,0 +1,43 @@
+{% extends 'home.html' %}
+
+<title>Floss Conversion</title>
+
+{% block body %}
+    <div>
+        <form method="POST">
+            <input type="text" name="floss" placeholder="Enter name">
+            <button class="button" type="submit" name="button" value="search" id="button_search">Search</button>
+            <button class="button" type="submit" name="button" value="convert" id="button_convert">Convert</button>
+        </form>
+    </div>
+
+    <div>
+        {% if message %}
+        <p>{{ message }}</p>
+        {% endif %}
+    </div>
+
+    <div>
+        {% if rows %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Brand</th>
+                    <th>Convert</th>
+                    <th>Hex</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td style="color: #{{ row[2] }}">{{ row[2] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+
+{% endblock %}

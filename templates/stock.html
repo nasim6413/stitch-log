@@ -11,24 +11,23 @@
     </form>
 </div>
 
-<div>
-  <p>{{message}}</p>
-<table>
-  <thead>
-    <tr>
-      <th>Brand</th>
-      <th>Number</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for row in rows %}
-      <tr>               
-        <td>{{ row[0] }}</td>
-        <td>{{ row[1] }}</td>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Brand</th>
+        <th>Number</th>
       </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>               
+          <td>{{ row[0] }}</td>
+          <td>{{ row[1] }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 {% endblock %}

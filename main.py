@@ -9,41 +9,12 @@ def get_db():
         g.db = sqlite3.connect('floss.db')
     return g.db
     
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/home', methods=['GET', 'POST'])
+@app.route('/')
+@app.route('/home')
 def home_page():
     conn = get_db()
     count = stock.stock_count(conn)
-    
-    if request.method == 'POST':
-        item = request.form['floss']
-        
-        if item:
-            brand, fno = setup.re_input(item)
-            action = request.form['button']
-            
-            if action == 'search':
-                rows = stock.stock_search(conn, brand, fno)
-                
-                if rows:
-                    message = f'Floss {brand} {fno} in stock!'
-                    return render_template('home.html', message=message, count=count)
-                
-                else:
-                    rows = setup.stock_convert(conn, brand, fno)
-                    
-                    if rows:
-                        message = f'Floss {brand} {fno} not in stock. Possible conversions available:'
-                    
-                    else:
-                        message = f'Floss {brand} {fno} not in stock and no possible conversions are available.'
-                        
-            if action == 'convert':
-                rows = setup.gen_convert(conn, brand, fno)
-                message = f'Possible conversions for floss {brand} {fno}:'
-                
-        return render_template('home.html', message=message, count=count, rows=rows)
-    
+
     return render_template('home.html', count=count)
 
 # Stock page
@@ -70,6 +41,42 @@ def stock_page():
         
     rows = stock.stock_list(conn)
     return render_template('stock.html', rows=rows)
+
+# Conversion page
+@app.route('/convert', methods=['GET', 'POST'])
+def convert_page():
+    conn = get_db()
+    
+    if request.method == 'POST':
+        item = request.form['floss']
+        
+        if item:
+            brand, fno = setup.re_input(item)
+            action = request.form['button']
+            
+            if action == 'search':
+                rows = stock.stock_search(conn, brand, fno)
+                
+                if rows:
+                    message = f'Floss {brand} {fno} in stock!'
+                    return render_template('convert.html', message=message)
+                
+                else:
+                    rows = setup.stock_convert(conn, brand, fno)
+                    
+                    if rows:
+                        message = f'Floss {brand} {fno} not in stock. Possible conversions available:'
+                    
+                    else:
+                        message = f'Floss {brand} {fno} not in stock and no possible conversions are available.'
+                        
+            if action == 'convert':
+                rows = setup.gen_convert(conn, brand, fno)
+                message = f'Possible conversions for floss {brand} {fno}:'
+                
+        return render_template('convert.html', message=message, rows=rows)
+    
+    return render_template('convert.html')
 
 @app.teardown_appcontext
 def teardown_db(exception):

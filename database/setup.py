@@ -44,6 +44,7 @@ def set_up(conn):
     # Stock table
     cursor.execute("""
         CREATE TABLE stock (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             brand TEXT NOT NULL,
             fno TEXT NOT NULL
         );
@@ -53,7 +54,7 @@ def set_up(conn):
     cursor.execute("""
         CREATE TABLE project_details (
             project_name TEXT NOT NULL PRIMARY KEY,
-            start_date TIMESTAMP,
+            start_date TIMESTAMP NOT NULL,
             end_date TIMESTAMP
         );
     """)
@@ -61,7 +62,8 @@ def set_up(conn):
     # Project floss table
     cursor.execute("""
         CREATE TABLE project_floss (
-            project_name TEXT NOT NULL PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_name TEXT NOT NULL,
             brand TEXT NOT NULL,
             fno TEXT NOT NULL
         );
