@@ -14,18 +14,18 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    overflow: hidden;
 }
 
 .container {
-    width: 1000px;               /* Fixed width */
-    max-width: 100%;             /* Prevent overflow on small screens */
-    margin: 5% auto;             /* Center horizontally */
-    padding: 30px;
+    width: 1000px;
+    max-width: 100%;
+    margin: 10px auto;
     padding: 30px;
     background-color: rgba(255, 255, 255);
     border-radius: 12px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    overflow: hidden;           /* Prevent scrollbars on container itself */
+    overflow: hidden;
 }
 
 /* Basic layout styling */
@@ -68,6 +68,7 @@ h1 {
   font-size: 14px;
   margin-top: 4px;
 }
+
 .icon-nav {
   display: flex;
   justify-content: center;
@@ -117,14 +118,14 @@ input[type="text"] {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
     font-size: 14px;
 }
 
 .table-wrapper {
-    max-height: 300px;   /* Adjust as needed */
+    max-height: 300px;
+    margin: 5px;
     overflow-y: auto;
-    overflow-x: auto;    /* Add if table might overflow horizontally */
+    overflow-x: auto;
     border: 1px solid #ddd;
 }
 
@@ -157,4 +158,8 @@ tr:hover {
 
 #button_delete{
   background-color: tomato;
+}
+
+p {
+  font-size: 10px;
 }

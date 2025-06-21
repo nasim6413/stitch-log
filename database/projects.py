@@ -1,38 +1,126 @@
-# # Create project
-# def create_project(conn, name, start_date, end_date = False):
+from .helpers import *
+
+def create_project(conn, name, start_date, end_date = False):
     
-#     """Creates new cross-stitch project (if not existing)."""
+    """Creates new cross-stitch project (if not existing)."""
     
-#     cursor = conn.cursor()
-#     cursor.execute("""
-#                    SELECT * FROM project_details
-#                    """)
+    cursor = conn.cursor()
     
-#     output = cursor.fetchall()
-    
-#     if len(output) > 0:
-#         cursor.execute("""
-#                        INSERT INTO project_details (name, start_date, end_date)
-#                        VALUES (?, date(?), ?)
-#                        """,
-#                        (name, start_date, end_date))
+    if search_project(conn, name):
         
-#         conn.commit()
-#         cursor.close()
-#         return True
+        cursor.close()
+        return False
+    
+    else:
+        cursor.execute("""
+                       INSERT INTO project_details (name, start_date, end_date)
+                       VALUES (?, ?, ?);
+                       """,
+                       (name, start_date, end_date))
         
-#     else:
-#         cursor.close()
-#         return False
+        conn.commit()
+        cursor.close()
+        return True  
     
+def delete_project(conn, name):
     
+    """Deletes project and relevant data."""
+    
+    cursor = conn.cursor()
+    
+    if search_project(conn, name):
+        cursor.execute("""
+                       DELETE FROM project_details
+                       WHERE project_name = ?
+                       ;
+                       """,
+                       (name,))
+        
+        conn.commit()
+        cursor.close()
+        return True 
+    
+    else:
+        return False 
 
-# Edit project details (including set end date)
+#TODO: edit project details
 
-# Add to project floss
+def project_add_floss(conn, name, brand, fno):
+    
+    """Adds floss to project list."""
+    
+    cursor = conn.cursor()
+    
+    # Checks that project exists and floss is not listed under it
+    if search_project(conn, name) and not search_project_floss(conn, name,brand, fno):
+        cursor.execute("""
+                       INSERT INTO project_floss (project_name, brand, fno)
+                       VALUES (?, ?, ?);
+                       """,
+                       (name, brand, fno))
+        conn.commit()
+        cursor.close()
+        return True
+    
+    else:
+        return False
 
-# Delete from project floss
+def project_del_floss(conn, name, brand, fno):
+    
+    """Deletes floss from project list."""
+    
+    cursor = conn.cursor()
+    
+    # Checks that project exists and floss is listed under it
+    if search_project(conn, name, brand, fno):
+        cursor.execute("""
+                       DELETE FROM project_floss
+                       WHERE project_name = ? AND brand = ? AND fno = ?;
+                       """, 
+                       (name, brand, fno))
+        
+        conn.commit()
+        cursor.close()
+        return True
+    
+    else:
+        return False
 
-# Show all projects (names & details)
+def list_projects(conn):
+    
+    """Returns list of all projects with start and end dates."""
+    
+    cursor = conn.cursor()
+    cursor.execute("""
+                   SELECT name, start_date, end_date
+                   FROM project_details;
+                   """)
+    
+    try:
+        output = cursor.fetchall()
+        cursor.close()
+        return output
 
-# Show project (join project_details with project_floss + availabilites)
+    except:
+        cursor.close()
+        return False
+
+
+def list_project_details(conn, name):
+    
+    """Returns given project's floss details and whether floss is in stock."""
+    
+    cursor = conn.cursor()
+    if search_project(conn, name):
+        cursor.execute("""SELECT project_floss.brand, project_floss.fno, (stock.id IS NOT NULL) AS available
+                       FROM project_floss
+                       LEFT JOIN stock ON project_floss.brand = stock.brand AND project_floss.fno = stock.fno
+                       
+                       """)
+        
+        output = cursor.fetchall()
+        cursor.close()
+        return output
+    
+    else:
+        return False

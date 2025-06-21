@@ -1,3 +1,5 @@
+from .helpers import *
+
 def stock_list(conn):
     
     """Returns list of current stock."""
@@ -32,34 +34,13 @@ def stock_count(conn):
     cursor.close()
     return stock_no
 
-def stock_search(conn, brand, fno):
-
-    """Returns rows/s for specified floss."""
-    
-    cursor = conn.cursor()
-        
-    cursor.execute("""
-                    SELECT stock.*
-                    FROM stock 
-                    WHERE stock.brand = ? AND stock.fno = ?
-                    """, 
-                    (brand, fno,))
-
-    output = cursor.fetchall()
-    if len(output) > 0:
-        cursor.close()
-        return True
-        
-    else:
-        return False
-
 def stock_add(conn, brand, fno):
     
     """Adds specified floss to stock table if not existing."""
     
     cursor = conn.cursor()
 
-    if not stock_search(conn, brand, fno):
+    if not search_stock(conn, brand, fno):
         cursor.execute("""
                         INSERT INTO stock (brand, fno)
                         VALUES (?, ?);
@@ -79,7 +60,7 @@ def stock_del(conn, brand, fno):
     
     cursor = conn.cursor()
 
-    if stock_search(conn, brand, fno):
+    if search_stock(conn, brand, fno):
         cursor.execute("""
                         DELETE FROM stock
                         WHERE stock.brand = ? AND stock.fno = ?;

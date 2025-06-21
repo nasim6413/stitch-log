@@ -1,7 +1,6 @@
 import pandas as pd
 import re
-       
-BRANDS = ['DMC', 'Anchor']
+from .helpers import BRANDS
 
 def set_up(conn):   
     
@@ -68,7 +67,7 @@ def set_up(conn):
             fno TEXT NOT NULL
         );
     """)
-
+    
 def re_input(item):
     
     """Fixes input."""
@@ -96,70 +95,3 @@ def re_input(item):
         fno = fno_match.group(1).upper() + fno_match.group(2)
     
     return brand, fno
-    
-def gen_convert(conn, brand, fno):
-    
-    """Returns all possible conversions for a specified floss."""
-    
-    cursor = conn.cursor()
-
-    if brand == BRANDS[0]:
-        cursor.execute("""
-                    SELECT dmc, anchor, hex
-                    FROM dmc_to_anchor
-                    WHERE dmc_to_anchor.dmc = ?;
-                    """,
-                    (fno,))
-        
-    if brand == BRANDS[1]:
-        cursor.execute("""
-                    SELECT anchor, dmc, hex
-                    FROM anchor_to_dmc
-                    WHERE anchor_to_dmc.anchor = ?;
-                    """,
-                    (fno,))
-        
-    try:
-        output = cursor.fetchall()
-        cursor.close()
-        return output
-
-    except:
-        cursor.close()
-        return False
-        
-
-def stock_convert(conn, brand, fno):
-    
-    """Returns possible conversions for a specified floss if available from stock."""
-    
-    cursor = conn.cursor()
-
-    if brand == BRANDS[0]:
-        cursor.execute("""
-                        SELECT DISTINCT dmc_to_anchor.dmc, stock.fno AS anchor, dmc_to_anchor.hex
-                        FROM stock 
-                            INNER JOIN dmc_to_anchor 
-                            ON (dmc_to_anchor.anchor = stock.fno)
-                        WHERE dmc_to_anchor.dmc = ?;
-                        """,
-                        (fno,))
-        
-    if brand == BRANDS[1]:
-        cursor.execute("""
-                        SELECT DISTINCT anchor_to_dmc.anchor, stock.fno AS anchor, anchor_to_dmc.hex
-                        FROM stock 
-                            INNER JOIN anchor_to_dmc 
-                            ON (anchor_to_dmc.dmc = stock.fno)
-                        WHERE anchor_to_dmc.anchor = ?;
-                        """,
-                        (fno,))
-    
-    try:
-        output = cursor.fetchall()
-        cursor.close()
-        return output
-            
-    except:
-        cursor.close()
-        return False

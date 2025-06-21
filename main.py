@@ -1,6 +1,6 @@
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, g
-from database import setup, stock
+from database import setup, stock, projects, convert
 
 app = Flask(__name__)
 
@@ -13,9 +13,9 @@ def get_db():
 @app.route('/home')
 def home_page():
     conn = get_db()
-    count = stock.stock_count(conn)
+    stock_count = stock.stock_count(conn)
 
-    return render_template('home.html', count=count)
+    return render_template('home.html', stock_count=stock_count)
 
 # Stock page
 @app.route('/stock', methods=['GET', 'POST'])
@@ -52,29 +52,10 @@ def convert_page():
         
         if item:
             brand, fno = setup.re_input(item)
-            action = request.form['button']
-            
-            if action == 'search':
-                rows = stock.stock_search(conn, brand, fno)
+                                   
+            converted_brand, rows = convert.gen_convert(conn, brand, fno)
                 
-                if rows:
-                    message = f'Floss {brand} {fno} in stock!'
-                    return render_template('convert.html', message=message)
-                
-                else:
-                    rows = setup.stock_convert(conn, brand, fno)
-                    
-                    if rows:
-                        message = f'Floss {brand} {fno} not in stock. Possible conversions available:'
-                    
-                    else:
-                        message = f'Floss {brand} {fno} not in stock and no possible conversions are available.'
-                        
-            if action == 'convert':
-                rows = setup.gen_convert(conn, brand, fno)
-                message = f'Possible conversions for floss {brand} {fno}:'
-                
-        return render_template('convert.html', message=message, rows=rows)
+        return render_template('convert.html', brand=brand, converted_brand=converted_brand, rows=rows)
     
     return render_template('convert.html')
 

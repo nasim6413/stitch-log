@@ -6,7 +6,6 @@
     <div>
         <form method="POST">
             <input type="text" name="floss" placeholder="Enter name">
-            <button class="button" type="submit" name="button" value="search" id="button_search">Search</button>
             <button class="button" type="submit" name="button" value="convert" id="button_convert">Convert</button>
         </form>
     </div>
@@ -22,9 +21,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>Brand</th>
-                    <th>Convert</th>
+                    <th>{{brand}}</th>
+                    <th>{{converted_brand}}</th>
                     <th>Hex</th>
+                    <th>Available</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +33,9 @@
                     <td>{{ row[0] }}</td>
                     <td>{{ row[1] }}</td>
                     <td style="color: #{{ row[2] }}">{{ row[2] }}</td>
+                    <td style="color: {{ 'green' if row[3] else 'red' }}">
+                        {{ 'available' if row[3] else 'not available' }}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
