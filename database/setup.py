@@ -30,10 +30,10 @@ def set_up(conn):
     """)
     
     # Retrieving conversion data
-    dmc_to_anchor = pd.read_csv('./conversions/dmc_to_anchor.csv', names=['dmc', 'anchor', 'hex', 'colour'])
+    dmc_to_anchor = pd.read_csv('/conversions/dmc_to_anchor.csv', names=['dmc', 'anchor', 'hex', 'colour'])
     dmc_to_anchor = dmc_to_anchor[dmc_to_anchor.anchor != 'NA']
             
-    anchor_to_dmc = pd.read_csv('./conversions/anchor_to_dmc.csv', names=['anchor', 'dmc', 'hex', 'colour'])
+    anchor_to_dmc = pd.read_csv('/conversions/anchor_to_dmc.csv', names=['anchor', 'dmc', 'hex', 'colour'])
     anchor_to_dmc = anchor_to_dmc[anchor_to_dmc.dmc != 'NA']
     
     # Populate conversion tables
