@@ -1,6 +1,6 @@
 from .helpers import *
 
-def create_project(conn, name, start_date, end_date = False):
+def create_project(conn, name, start_date):
     
     """Creates new cross-stitch project (if not existing)."""
     
@@ -13,10 +13,10 @@ def create_project(conn, name, start_date, end_date = False):
     
     else:
         cursor.execute("""
-                       INSERT INTO project_details (name, start_date, end_date)
-                       VALUES (?, ?, ?);
+                       INSERT INTO project_details (project_name, start_date)
+                       VALUES (?, ?);
                        """,
-                       (name, start_date, end_date))
+                       (name, start_date))
         
         conn.commit()
         cursor.close()
@@ -42,8 +42,26 @@ def delete_project(conn, name):
     
     else:
         return False 
-
-#TODO: edit project details
+    
+def update_project(conn, name, end_date):
+    
+    """Updates project's end date.""" #TODO: add more functionality to this
+    
+    cursor = conn.cursor()
+    
+    if search_project(conn, name):
+        cursor.execute("""UPDATE project_details
+                       SET end_date = ?
+                       WHERE project_name = ?;
+                       """,
+                       (end_date, name))
+        
+        conn.commit()
+        cursor.close()
+        return True
+    
+    else:
+        return False
 
 def project_add_floss(conn, name, brand, fno):
     
@@ -92,7 +110,7 @@ def list_projects(conn):
     
     cursor = conn.cursor()
     cursor.execute("""
-                   SELECT name, start_date, end_date
+                   SELECT project_name, start_date, end_date
                    FROM project_details;
                    """)
     

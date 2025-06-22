@@ -1,0 +1,29 @@
+{% extends 'home.html' %}
+
+<title>New Project</title>
+
+{% block body %}
+
+<h3>New Project</h3>
+
+<div>
+    <form method="POST">
+        <div class="form-field">
+            <label for="project-name">Project Name</label><br>
+            <input type="text" name="project-name" id="project-name" placeholder="Enter project name"
+                   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        </div>
+
+        <div class="form-field">
+            <label for="start-date">Start Date</label><br>
+            <input type="date" name="start-date" id="start-date">
+        </div>
+
+        <div>
+            <button class="button" type="submit" name="button" value="create" id="button_add">Create</button>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

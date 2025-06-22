@@ -1,5 +1,6 @@
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, g
+from markupsafe import escape
 from database import setup, stock, projects, convert
 
 app = Flask(__name__)
@@ -13,9 +14,30 @@ def get_db():
 @app.route('/home')
 def home_page():
     conn = get_db()
-    stock_count = stock.stock_count(conn)
+    
+    projects_list = projects.list_projects(conn)
+    
+    return render_template('home.html', projects_list=projects_list)
 
-    return render_template('home.html', stock_count=stock_count)
+@app.route('/home/<project_name>')
+def show_project(project_name):
+    
+    return render_template('project_page.html', project_name = project_name)
+
+# New project page
+@app.route('/new-project', methods=['GET', 'POST'])
+def new_project_page():
+    if request.method == 'POST':
+        conn = get_db()
+        
+        project_name = request.form['project-name']
+        start_date = request.form['start-date']
+        
+        projects.create_project(conn, project_name, start_date)
+        
+        return redirect(url_for('home_page'))
+    
+    return render_template('new_project.html')
 
 # Stock page
 @app.route('/stock', methods=['GET', 'POST'])

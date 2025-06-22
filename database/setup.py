@@ -29,17 +29,6 @@ def set_up(conn):
         );
     """)
     
-    # Retrieving conversion data
-    dmc_to_anchor = pd.read_csv('/conversions/dmc_to_anchor.csv', names=['dmc', 'anchor', 'hex', 'colour'])
-    dmc_to_anchor = dmc_to_anchor[dmc_to_anchor.anchor != 'NA']
-            
-    anchor_to_dmc = pd.read_csv('/conversions/anchor_to_dmc.csv', names=['anchor', 'dmc', 'hex', 'colour'])
-    anchor_to_dmc = anchor_to_dmc[anchor_to_dmc.dmc != 'NA']
-    
-    # Populate conversion tables
-    dmc_to_anchor.to_sql('dmc_to_anchor', conn, if_exists='append', index = False)
-    anchor_to_dmc.to_sql('anchor_to_dmc', conn, if_exists='append', index = False)
-    
     # Stock table
     cursor.execute("""
         CREATE TABLE stock (
@@ -67,6 +56,19 @@ def set_up(conn):
             fno TEXT NOT NULL
         );
     """)
+    
+    # Retrieving conversion data
+    dmc_to_anchor = pd.read_csv('database/conversions/dmc_to_anchor.csv', names=['dmc', 'anchor', 'hex', 'colour'])
+    dmc_to_anchor = dmc_to_anchor[dmc_to_anchor.anchor != 'NA']
+            
+    anchor_to_dmc = pd.read_csv('database/conversions/anchor_to_dmc.csv', names=['anchor', 'dmc', 'hex', 'colour'])
+    anchor_to_dmc = anchor_to_dmc[anchor_to_dmc.dmc != 'NA']
+    
+    # Populate conversion tables
+    dmc_to_anchor.to_sql('dmc_to_anchor', conn, if_exists='append', index = False)
+    anchor_to_dmc.to_sql('anchor_to_dmc', conn, if_exists='append', index = False)
+    
+    return
     
 def validate_floss_input(item):
     

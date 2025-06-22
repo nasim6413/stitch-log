@@ -8,8 +8,8 @@
 
 <body>
     <div class="container">
-        <h1 style="font-size:3vw">StitchLog</h1>
-        <hr style="width: 200px; margin: 0 auto 20px; border: 1px solid #ccc; border-radius: 2px;">
+        <h1>StitchLog</h1>
+        <hr></hr>
 
         <nav class="icon-nav">
         <a href="/home" class="icon-button">
@@ -27,8 +27,31 @@
         </nav>
 
         {% block body %}
-        <div>
-            <h3 id="stock-count">Currently {{stock_count}} floss in stock!</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in projects_list %}
+                        <tr>               
+                        <td><a href="/home/{{p[0]}}" id="project-page">{{ p[0] }}</a></td>
+                        <td>{{ p[1] }}</td>
+                        <td>{{ p[2] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="new-project">
+            <a href="/new-project" class="icon-button">
+                <img src="/static/icons/new.png" alt="New Project" class="nav-icon">
+            </a>
         </div>
 
         {% endblock %}
