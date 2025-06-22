@@ -1,6 +1,6 @@
 import pandas as pd
 import re
-from .helpers import BRANDS
+from .helpers import *
 
 def set_up(conn):   
     
@@ -68,12 +68,22 @@ def set_up(conn):
         );
     """)
     
-def re_input(item):
+def validate_floss_input(item):
     
-    """Fixes input."""
+    """Input validation for floss entries."""
     
-    pattern = r'(DMC|Anchor)\s*(\w?\d{1,4}|B5200|ECRU|White)'
-    match = re.match(pattern, item, re.IGNORECASE)
+    match = re.match(FLOSS_PATTERN, item, re.IGNORECASE)
+    
+    if match:
+        return True
+    else:
+        return False
+    
+def fix_input(item):
+    
+    """Fixes floss input."""
+    
+    match = re.match(FLOSS_PATTERN, item, re.IGNORECASE)
     
     brand = match.group(1)
     fno = match.group(2)

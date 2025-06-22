@@ -1,4 +1,5 @@
 BRANDS = ['DMC', 'Anchor']
+FLOSS_PATTERN = r'(DMC|Anchor)\s*(\w?\d{1,4}|B5200|ECRU|White)'
 
 def search_stock(conn, brand, fno):
 

@@ -25,9 +25,8 @@ def stock_page():
     if request.method == 'POST':
         item = request.form['floss']
         
-        if item:
-            brand, fno = setup.re_input(item)
-            
+        if setup.validate_floss_input(item):
+            brand, fno = setup.fix_input(item)
             action = request.form['button']
             
             if action == 'add':
@@ -36,6 +35,7 @@ def stock_page():
                 stock.stock_del(conn, brand, fno)
             
             return redirect(url_for('stock_page'))
+        
         else:
             return redirect(url_for('stock_page'))
         
@@ -50,12 +50,15 @@ def convert_page():
     if request.method == 'POST':
         item = request.form['floss']
         
-        if item:
-            brand, fno = setup.re_input(item)
+        if setup.validate_floss_input(item):
+            brand, fno = setup.fix_input(item)
                                    
             converted_brand, rows = convert.gen_convert(conn, brand, fno)
                 
-        return render_template('convert.html', brand=brand, converted_brand=converted_brand, rows=rows)
+            return render_template('convert.html', brand=brand, converted_brand=converted_brand, rows=rows)
+        
+        else:
+            return redirect(url_for('convert_page'))
     
     return render_template('convert.html')
 
