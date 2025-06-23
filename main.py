@@ -36,6 +36,7 @@ def project_page(project_name):
         
         elif action == "amend-project":
             return redirect(url_for('home_page'))
+            # return redirect(url_for('amend_project', project_name=project_name))
             
     return render_template('project_page.html', project_name = project_name, project_floss=project_floss)
 
@@ -84,8 +85,8 @@ def project_setup():
 
                 # Retrieve all from 'floss-item' input fields
                 floss_items = request.form.getlist('floss-item') 
-                if floss_items:
-                    for f in floss_items:
+                for f in floss_items:
+                    if setup.validate_floss_input(f):
                         brand, fno = setup.fix_input(f)
                         projects.project_add_floss(conn, session['project_name'], brand, fno)
                 
@@ -99,6 +100,13 @@ def project_setup():
                            start_date=start_date,
                            error=error)
 
+# # Amend project details page
+# @app.route('/amend-project/<project-name>/', methods=['GET', 'POST'])
+# def amend_project(project_name):
+#     conn = get_db()
+    
+#     return render_template('amend_project.html', )
+    
 # Stock page
 @app.route('/stock', methods=['GET', 'POST'])
 def stock_page():
