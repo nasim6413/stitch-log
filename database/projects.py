@@ -1,5 +1,44 @@
 from .helpers import *
 
+def search_project(conn, name):
+    
+    """Checks whether project exists."""
+    
+    cursor = conn.cursor()
+    cursor.execute("""
+                   SELECT * FROM project_details
+                   WHERE project_name = ?;
+                   """,
+                   (name,))
+    
+    output = cursor.fetchall()
+    cursor.close()
+    
+    if len(output) > 0:
+        return True
+    
+    else:
+        return False
+    
+def search_project_floss(conn, name, brand, fno):
+    
+    """Check whether a floss is listed under a project."""
+    
+    cursor = conn.cursor()
+    cursor.execute("""
+                   SELECT project_name, brand, fno FROM project_floss
+                   WHERE project_name = ? AND brand = ? AND fno = ?;
+                   """,
+                   (name, brand, fno))
+    
+    output = cursor.fetchall()
+    cursor.close()
+    
+    if len(output) > 0:
+        return True
+    else:
+        return False
+
 def create_project(conn, name, start_date):
     
     """Creates new cross-stitch project (if not existing)."""

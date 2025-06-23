@@ -9,13 +9,13 @@
 <div>
     <form method="POST" enctype=multipart/form-data>
         <div class="form-field">
-            <label for="project-name">Project Name</label><br>
+            <label for="project-name">Project Name*</label><br>
             <input type="text" name="project-name" id="project-name" placeholder="Enter project name"
                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="{{ project_name or '' }}">
         </div>
 
         <div class="form-field">
-            <label for="start-date">Start Date</label><br>
+            <label for="start-date">Start Date*</label><br>
             <input type="date" name="start-date" id="start-date" value="{{ start_date or '' }}">
         </div>
 
@@ -25,27 +25,16 @@
         </div>
 
         {% if floss_list %}
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Brand</th>
-                        <th>Number</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for f in floss_list %}
-                        <tr>               
-                        <td>{{ f[0] }}</td>
-                        <td>{{ f[1] }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {% for f in floss_list %}
+                <input type="text" name="floss-item" id="floss-item" 
+                   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="{{ f[0] }} {{ f[1] }}">
+                {% endfor %}
         {% endif %}
 
         <div>
+            {% if error %}
+            <p style="color: red;">{{ error }}</p>
+            {% endif %}
             <button class="button" type="submit" name="button" value="create" id="button_add">Create</button>
         </div>
 

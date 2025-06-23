@@ -1,9 +1,11 @@
 import sqlite3
-from flask import Flask, render_template, request, redirect, url_for, g
+from flask import Flask, render_template, request, redirect, url_for, g, session
 from io import BytesIO
 from database import setup, stock, projects, convert, extractor
+from config import SECRET_KEY
 
 app = Flask(__name__)
+app.secret_key = SECRET_KEY
 
 def get_db():
     if 'db' not in g:
@@ -26,46 +28,76 @@ def project_page(project_name):
     project_floss = projects.list_project_details(conn, project_name)
     
     if request.method == 'POST':
-        projects.delete_project(conn, project_name)
+        action = request.form['button']
         
-        return redirect(url_for('home_page'))
+        if action == "delete-project":
+            projects.delete_project(conn, project_name)
+            return redirect(url_for('home_page'))
+        
+        elif action == "amend-project":
+            return redirect(url_for('home_page'))
             
     return render_template('project_page.html', project_name = project_name, project_floss=project_floss)
 
 # New project page
 @app.route('/new-project', methods=['GET', 'POST'])
 def project_setup():
+    error = session.get('error', '')
+    floss_list = session.get('floss_list', [])
+    project_name = session.get('project_name', '')
+    start_date = session.get('start_date', '')
+
     if request.method == 'POST':
-        conn = get_db()
-        
+        conn = get_db()       
         action = request.form['button']
         
-        project_name = request.form['project-name']
-        start_date = request.form['start-date']
-        
+        # Store session data
+        session['project_name'] = request.form['project-name']
+        session['start_date'] = request.form['start-date']
         pattern_file = request.files['file']
         
-        if action == 'create': 
-            # Extracting floss list
+        # Uploading PDF for floss extraction
+        if action == 'upload': 
             if pattern_file.filename == '':
                 return redirect(url_for('project_setup'))
 
             if pattern_file and pattern_file.filename.lower().endswith('.pdf'):
-                floss_list = extractor.extract_floss(BytesIO(pattern_file.read()))
+                session['floss_list'] = extractor.extract_floss(BytesIO(pattern_file.read()))
                 
-            #TODO: edit floss list before project creation
-                
-        #         return render_template('project_setup.html', floss_list=floss_list, project_name=project_name, start_date=start_date)
+                return redirect(url_for('project_setup'))
 
-        # if action == 'create':
-                projects.create_project(conn, project_name, start_date)
+        # Creating project
+        if action == 'create':
+            # Checks that required fields are filled
+            if not request.form['project-name'] or not request.form['start-date']:
+                session['error'] = f'Please input relevant details!'
+                return redirect(url_for('project_setup'))
+            
+            # Checks that project is not already existing
+            if projects.search_project(conn, request.form['project-name']):
+                session['error'] = f'Project already exists!'
+                return redirect(url_for('project_setup'))
+            
+            else:
+                # Create project and details
+                projects.create_project(conn, session['project_name'], session['start_date'])
+
+                # Retrieve all from 'floss-item' input fields
+                floss_items = request.form.getlist('floss-item') 
+                if floss_items:
+                    for f in floss_items:
+                        brand, fno = setup.fix_input(f)
+                        projects.project_add_floss(conn, session['project_name'], brand, fno)
                 
-                for f_item in floss_list:
-                    projects.project_add_floss(conn, project_name, f_item[0], f_item[1])
-                    
+                project_name=session['project_name']
+                session.clear()
                 return redirect(url_for('project_page', project_name=project_name))
     
-    return render_template('project_setup.html')
+    return render_template('project_setup.html', 
+                           floss_list=floss_list, 
+                           project_name=project_name, 
+                           start_date=start_date,
+                           error=error)
 
 # Stock page
 @app.route('/stock', methods=['GET', 'POST'])
