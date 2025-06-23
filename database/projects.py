@@ -36,6 +36,13 @@ def delete_project(conn, name):
                        """,
                        (name,))
         
+        cursor.execute("""
+                       DELETE FROM project_floss
+                       WHERE project_name = ?
+                       ;
+                       """,
+                       (name,))
+        
         conn.commit()
         cursor.close()
         return True 
@@ -133,8 +140,9 @@ def list_project_details(conn, name):
         cursor.execute("""SELECT project_floss.brand, project_floss.fno, (stock.id IS NOT NULL) AS available
                        FROM project_floss
                        LEFT JOIN stock ON project_floss.brand = stock.brand AND project_floss.fno = stock.fno
-                       
-                       """)
+                       WHERE project_floss.project_name = ?
+                       """,
+                       (name,))
         
         output = cursor.fetchall()
         cursor.close()

@@ -6,5 +6,34 @@
 
 <h3>{{ project_name }}</h3>
 
+<div class="table-wrapper">
+    <table>
+        <thead>
+        <tr>
+            <th>Brand</th>
+            <th>Number</th>
+            <th>Available</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for f in project_floss %}
+            <tr>               
+            <td>{{ f[0] }}</td>
+            <td>{{ f[1] }}</td>
+            <td style="color: {{ 'green' if f[2] else 'red' }}">
+            {{ 'in stock' if f[2] else 'not in stock' }}
+            </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<div id="delete-project">
+    <form method="POST">
+        <button class="button" type="submit" name="button" value="delete-project" id="button_delete">Delete Project</button>
+    </form>
+</div>
 
 {% endblock %}

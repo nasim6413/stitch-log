@@ -1,7 +1,7 @@
 import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, g
-from markupsafe import escape
-from database import setup, stock, projects, convert
+from io import BytesIO
+from database import setup, stock, projects, convert, extractor
 
 app = Flask(__name__)
 
@@ -19,25 +19,53 @@ def home_page():
     
     return render_template('home.html', projects_list=projects_list)
 
-@app.route('/home/<project_name>')
-def show_project(project_name):
+@app.route('/home/<project_name>', methods=['GET', 'POST'])
+def project_page(project_name):
+    conn = get_db()
     
-    return render_template('project_page.html', project_name = project_name)
+    project_floss = projects.list_project_details(conn, project_name)
+    
+    if request.method == 'POST':
+        projects.delete_project(conn, project_name)
+        
+        return redirect(url_for('home_page'))
+            
+    return render_template('project_page.html', project_name = project_name, project_floss=project_floss)
 
 # New project page
 @app.route('/new-project', methods=['GET', 'POST'])
-def new_project_page():
+def project_setup():
     if request.method == 'POST':
         conn = get_db()
+        
+        action = request.form['button']
         
         project_name = request.form['project-name']
         start_date = request.form['start-date']
         
-        projects.create_project(conn, project_name, start_date)
+        pattern_file = request.files['file']
         
-        return redirect(url_for('home_page'))
+        if action == 'create': 
+            # Extracting floss list
+            if pattern_file.filename == '':
+                return redirect(url_for('project_setup'))
+
+            if pattern_file and pattern_file.filename.lower().endswith('.pdf'):
+                floss_list = extractor.extract_floss(BytesIO(pattern_file.read()))
+                
+            #TODO: edit floss list before project creation
+                
+        #         return render_template('project_setup.html', floss_list=floss_list, project_name=project_name, start_date=start_date)
+
+        # if action == 'create':
+                projects.create_project(conn, project_name, start_date)
+                
+                for f_item in floss_list:
+                    projects.project_add_floss(conn, project_name, f_item[0], f_item[1])
+                    
+                return redirect(url_for('project_page', project_name=project_name))
     
-    return render_template('new_project.html')
+    return render_template('project_setup.html')
 
 # Stock page
 @app.route('/stock', methods=['GET', 'POST'])
