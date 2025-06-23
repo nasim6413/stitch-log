@@ -141,10 +141,13 @@ def list_project_details(conn, name):
                        FROM project_floss
                        LEFT JOIN stock ON project_floss.brand = stock.brand AND project_floss.fno = stock.fno
                        WHERE project_floss.project_name = ?
+                       ORDER BY project_floss.brand;
                        """,
                        (name,))
         
         output = cursor.fetchall()
+        output = sorted(output, key=lambda row: (row[0].lower(), natural_key(row[1])))
+        
         cursor.close()
         return output
     

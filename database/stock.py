@@ -8,11 +8,13 @@ def stock_list(conn):
     cursor.execute("""
                     SELECT brand, fno
                     FROM stock
-                    ORDER BY brand, fno;
+                    ORDER BY brand;
                     """)
     
     try:
         output = cursor.fetchall()
+        output = sorted(output, key=lambda row: (row[0].lower(), natural_key(row[1])))
+        
         cursor.close()
         return output
 
