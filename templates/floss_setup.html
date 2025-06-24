@@ -1,0 +1,38 @@
+{% extends 'home.html' %}
+
+<title>{{ project_name }} Floss</title>
+
+{% block body %}
+
+<h3>{{ project_name }} Floss</h3>
+
+<div>
+    <form method="POST" enctype=multipart/form-data>
+
+        <h3>Upload Pattern</h3>
+
+        <div>
+            <input type=file name=file>
+            <button class="button" name="button" type="submit" value="upload">Upload</button>
+            <button class="button" type="submit" name="button" value="add-floss" id="button_add">Add</button>
+            </div>
+        </div>
+
+        <hr></hr>
+        
+        <div>
+        {% if floss_list %}
+            {% for f in floss_list %}
+                <input type="text" name="floss-item" id="floss-item" 
+                   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="{{ f[0] }} {{ f[1] }}">
+                {% endfor %}
+        {% endif %}
+        </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="button" type="submit" name="button" value="submit-floss" id="button_add">Submit</button>
+    </div>
+    </form>
+</div>
+
+{% endblock %}

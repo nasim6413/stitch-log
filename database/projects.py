@@ -75,13 +75,6 @@ def delete_project(conn, name):
                        """,
                        (name,))
         
-        cursor.execute("""
-                       DELETE FROM project_floss
-                       WHERE project_name = ?
-                       ;
-                       """,
-                       (name,))
-        
         conn.commit()
         cursor.close()
         return True 
@@ -150,6 +143,28 @@ def project_del_floss(conn, name, brand, fno):
     else:
         return False
 
+def project_del_all_floss(conn, name):
+    
+    """Delete all floss associated with project."""
+
+    cursor = conn.cursor()
+
+    if search_project(conn, name):
+        cursor.execute("""
+                DELETE FROM project_floss
+                WHERE project_name = ?
+                ;
+                """,
+                (name,))
+
+        conn.commit()
+        cursor.close()
+        return True
+
+    else:
+        return False
+
+    
 def list_projects(conn):
     
     """Returns list of all projects with start and end dates."""

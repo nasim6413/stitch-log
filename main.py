@@ -16,35 +16,38 @@ def get_db():
 @app.route('/home')
 def home_page():
     conn = get_db()
+    session.clear()
     
     projects_list = projects.list_projects(conn)
     
     return render_template('home.html', projects_list=projects_list)
 
+# Project page
 @app.route('/home/<project_name>', methods=['GET', 'POST'])
 def project_page(project_name):
     conn = get_db()
-    
+    session.clear()
+
     project_floss = projects.list_project_details(conn, project_name)
     
     if request.method == 'POST':
         action = request.form['button']
         
         if action == "delete-project":
+            projects.project_del_all_floss(conn, project_name)
             projects.delete_project(conn, project_name)
+
             return redirect(url_for('home_page'))
         
         elif action == "amend-project":
-            return redirect(url_for('home_page'))
-            # return redirect(url_for('amend_project', project_name=project_name))
+            return redirect(url_for('floss_setup', project_name=project_name))
             
-    return render_template('project_page.html', project_name = project_name, project_floss=project_floss)
+    return render_template('project_page.html', project_name=project_name, project_floss=project_floss)
 
 # New project page
 @app.route('/new-project', methods=['GET', 'POST'])
 def project_setup():
     error = session.get('error', '')
-    floss_list = session.get('floss_list', [])
     project_name = session.get('project_name', '')
     start_date = session.get('start_date', '')
 
@@ -53,64 +56,107 @@ def project_setup():
         action = request.form['button']
         
         # Store session data
-        session['project_name'] = request.form['project-name']
-        session['start_date'] = request.form['start-date']
-        pattern_file = request.files['file']
-        
-        # Uploading PDF for floss extraction
-        if action == 'upload': 
-            if pattern_file.filename == '':
-                return redirect(url_for('project_setup'))
-
-            if pattern_file and pattern_file.filename.lower().endswith('.pdf'):
-                session['floss_list'] = extractor.extract_floss(BytesIO(pattern_file.read()))
-                
-                return redirect(url_for('project_setup'))
+        session['project_name'] = project_name = request.form['project-name']
+        session['start_date'] = start_date = request.form['start-date']
 
         # Creating project
         if action == 'create':
+
             # Checks that required fields are filled
-            if not request.form['project-name'] or not request.form['start-date']:
+            if not project_name or not start_date:
                 session['error'] = f'Please input relevant details!'
                 return redirect(url_for('project_setup'))
             
             # Checks that project is not already existing
-            if projects.search_project(conn, request.form['project-name']):
+            if projects.search_project(conn, project_name):
                 session['error'] = f'Project already exists!'
                 return redirect(url_for('project_setup'))
             
             else:
                 # Create project and details
-                projects.create_project(conn, session['project_name'], session['start_date'])
+                projects.create_project(conn, project_name, start_date)
 
-                # Retrieve all from 'floss-item' input fields
-                floss_items = request.form.getlist('floss-item') 
-                for f in floss_items:
-                    if setup.validate_floss_input(f):
-                        brand, fno = setup.fix_input(f)
-                        projects.project_add_floss(conn, session['project_name'], brand, fno)
-                
-                project_name=session['project_name']
                 session.clear()
-                return redirect(url_for('project_page', project_name=project_name))
+                return redirect(url_for('floss_setup', project_name=project_name))
     
     return render_template('project_setup.html', 
-                           floss_list=floss_list, 
                            project_name=project_name, 
                            start_date=start_date,
                            error=error)
 
-# # Amend project details page
-# @app.route('/amend-project/<project-name>/', methods=['GET', 'POST'])
-# def amend_project(project_name):
-#     conn = get_db()
+# Project floss page
+@app.route('/projects/<project_name>/floss', methods=['GET', 'POST'])
+def floss_setup(project_name):
+    conn = get_db()
+
+    floss_list = session.get('floss_list', []) # Gets floss_list in session
+
+    # If not a list/tuple, try fetching from DB
+    if not floss_list:
+        floss_list = projects.list_project_details(conn, project_name)
     
-#     return render_template('amend_project.html', )
+    # If still not a list/tuple, force empty list
+    if not floss_list:
+        floss_list = []
+    
+    if request.method == 'POST':      
+        action = request.form['button']
+
+        # Uploading PDF for floss extraction
+        if action == 'upload': 
+            pattern_file = request.files['file']
+
+            floss_items = request.form.getlist('floss-item')
+            floss_list = [tuple(item.strip().split()) for item in floss_items] #Convert to list of tuples
+
+            if pattern_file.filename == '':
+                return redirect(url_for('project_setup'))
+
+            if pattern_file and pattern_file.filename.lower().endswith('.pdf'):
+                floss_extracted = extractor.extract_floss(BytesIO(pattern_file.read()))
+
+                # Merge existing + new floss entries
+                floss_list.extend(floss_extracted)
+                
+                session['floss_list'] = floss_list
+
+                return redirect(url_for('floss_setup', project_name=project_name))
+        
+        # Add more floss fields
+        if action == 'add-floss':
+            floss_items = request.form.getlist('floss-item')
+            floss_list = [tuple(item.strip().split()) for item in floss_items]
+
+            floss_list.append((' ', ' '))
+
+            session['floss_list'] = floss_list
+
+            return redirect(url_for('floss_setup', project_name=project_name))
+
+        # Submit final data
+        if action == 'submit-floss':
+
+            # Retrieve all from 'floss-item' input fields
+            floss_items = request.form.getlist('floss-item')
+
+            # Deletes current floss in project_details
+            projects.project_del_all_floss(conn, project_name)
+
+            for f in floss_items:
+                if setup.validate_floss_input(f):
+                    brand, fno = setup.fix_input(f)
+                    projects.project_add_floss(conn, project_name, brand, fno)
+
+            session.clear()
+            return redirect(url_for('project_page', project_name=project_name))
+        
+    return render_template('floss_setup.html', floss_list=floss_list, project_name=project_name)
     
 # Stock page
 @app.route('/stock', methods=['GET', 'POST'])
 def stock_page():
     conn = get_db()
+    session.clear()
     
     if request.method == 'POST':
         item = request.form['floss']
@@ -136,6 +182,7 @@ def stock_page():
 @app.route('/convert', methods=['GET', 'POST'])
 def convert_page():
     conn = get_db()
+    session.clear()
     
     if request.method == 'POST':
         item = request.form['floss']

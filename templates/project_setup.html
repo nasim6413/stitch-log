@@ -7,7 +7,7 @@
 <h3>Project Setup</h3>
 
 <div>
-    <form method="POST" enctype=multipart/form-data>
+    <form method="POST">
         <div class="form-field">
             <label for="project-name">Project Name*</label><br>
             <input type="text" name="project-name" id="project-name" placeholder="Enter project name"
@@ -18,20 +18,6 @@
             <label for="start-date">Start Date*</label><br>
             <input type="date" name="start-date" id="start-date" value="{{ start_date or '' }}">
         </div>
-
-        <h3>Upload Pattern</h3>
-
-        <div>
-            <input type=file name=file>
-            <button class="button" name="button" type="submit" value="upload">Upload</button>
-        </div>
-
-        {% if floss_list %}
-            {% for f in floss_list %}
-                <input type="text" name="floss-item" id="floss-item" 
-                   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="{{ f[0] }} {{ f[1] }}">
-                {% endfor %}
-        {% endif %}
 
         <div>
             {% if error %}
