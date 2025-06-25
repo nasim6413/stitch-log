@@ -1,0 +1,30 @@
+from flask import Blueprint, render_template, session, request, redirect, url_for
+from stitchlog.models import setup, stock
+
+s = Blueprint('stock', __name__, url_prefix='/stock')
+
+# Stock page
+@s.route('/', methods=['GET', 'POST'])
+def stock_page():
+    conn = setup.get_db()
+    session.clear()
+    
+    if request.method == 'POST':
+        item = request.form['floss'].strip()
+        
+        if setup.validate_floss_input(item):
+            brand, fno = setup.fix_input(item)
+            action = request.form['button']
+            
+            if action == 'add':
+                stock.stock_add(conn, brand, fno)
+            if action == 'delete':
+                stock.stock_del(conn, brand, fno)
+            
+            return redirect(url_for('stock.stock_page'))
+        
+        else:
+            return redirect(url_for('stock.stock_page'))
+        
+    rows = stock.stock_list(conn)
+    return render_template('stock.html', rows=rows)

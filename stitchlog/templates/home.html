@@ -12,7 +12,7 @@
         <hr></hr>
 
         <nav class="icon-nav">
-        <a href="/home" class="icon-button">
+        <a href="/projects" class="icon-button">
             <img src="/static/icons/home.png" alt="Home" class="nav-icon">
             <span class="nav-label">Home</span>
         </a>
@@ -41,7 +41,7 @@
                 <tbody>
                     {% for p in projects_list %}
                         <tr>               
-                        <td><a href="/home/{{p[0]}}" id="project-page">{{ p[0] }}</a></td>
+                        <td><a href="/projects/{{p[0]}}" id="project-page">{{ p[0] }}</a></td>
                         <td>{{ p[1] }}</td>
                         <td>{{ p[2] }}</td>
                         </tr>
@@ -51,7 +51,7 @@
         </div>
 
         <div id="new-project">
-            <a href="/new-project" class="icon-button">
+            <a href="/projects/new" class="icon-button">
                 <img src="/static/icons/new.png" alt="New Project" class="nav-icon">
             </a>
         </div>

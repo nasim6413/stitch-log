@@ -1,6 +1,8 @@
 import pandas as pd
 import re
-from .helpers import *
+import sqlite3
+from flask import g, current_app
+from ..utils import *
 
 def set_up(conn):   
     
@@ -58,10 +60,10 @@ def set_up(conn):
     """)
     
     # Retrieving conversion data
-    dmc_to_anchor = pd.read_csv('database/conversions/dmc_to_anchor.csv', names=['dmc', 'anchor', 'hex', 'colour'])
+    dmc_to_anchor = pd.read_csv('data/dmc_to_anchor.csv', names=['dmc', 'anchor', 'hex', 'colour'])
     dmc_to_anchor = dmc_to_anchor[dmc_to_anchor.anchor != 'NA']
             
-    anchor_to_dmc = pd.read_csv('database/conversions/anchor_to_dmc.csv', names=['anchor', 'dmc', 'hex', 'colour'])
+    anchor_to_dmc = pd.read_csv('data/anchor_to_dmc.csv', names=['anchor', 'dmc', 'hex', 'colour'])
     anchor_to_dmc = anchor_to_dmc[anchor_to_dmc.dmc != 'NA']
     
     # Populate conversion tables
@@ -69,6 +71,25 @@ def set_up(conn):
     anchor_to_dmc.to_sql('anchor_to_dmc', conn, if_exists='append', index = False)
     
     return
+
+def get_db():
+    
+    """Connecting to database within Flask app."""
+    
+    if 'db' not in g:
+        # Configures database path from app's config, not hardcoded
+        g.db = sqlite3.connect(current_app.config['DATABASE'])
+    return g.db
+
+
+def close_db(e=None):
+    
+    """Closing database connection within Flask app."""
+    
+    db = g.pop('db', None)
+    if db is not None:
+        db.close()
+    
     
 def validate_floss_input(item):
     

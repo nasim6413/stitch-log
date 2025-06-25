@@ -1,5 +1,4 @@
 __pycache__
-floss.db
+/instance
 scraper_anchor_conv.py
 scraper_dmc_conv.py
-config.py

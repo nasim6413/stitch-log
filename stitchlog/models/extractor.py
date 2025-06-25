@@ -1,4 +1,5 @@
 from pypdf import PdfReader
+from io import BytesIO
 # from .helpers import FLOSS_PATTERN
 import re
 
