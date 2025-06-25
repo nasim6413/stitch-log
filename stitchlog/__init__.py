@@ -31,7 +31,8 @@ def create_app():
         conn.close()
 
     # Register blueprints
-    from stitchlog.views import projects, stock, convert
+    from stitchlog.views import projects, stock, convert, home
+    app.register_blueprint(home.h)
     app.register_blueprint(projects.p)
     app.register_blueprint(stock.s)
     app.register_blueprint(convert.c)

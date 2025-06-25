@@ -12,9 +12,13 @@
         <hr></hr>
 
         <nav class="icon-nav">
-        <a href="/projects" class="icon-button">
+        <a href="/home" class="icon-button">
             <img src="/static/icons/home.png" alt="Home" class="nav-icon">
             <span class="nav-label">Home</span>
+        </a>
+        <a href="/projects" class="icon-button">
+            <img src="/static/icons/projects.png" alt="Home" class="nav-icon">
+            <span class="nav-label">Projects</span>
         </a>
         <a href="/stock" class="icon-button">
             <img src="/static/icons/stock.png" alt="Stock" class="nav-icon">
@@ -29,33 +33,7 @@
         <hr></hr>
 
         {% block body %}
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Project</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for p in projects_list %}
-                        <tr>               
-                        <td><a href="/projects/{{p[0]}}" id="project-page">{{ p[0] }}</a></td>
-                        <td>{{ p[1] }}</td>
-                        <td>{{ p[2] }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <div id="new-project">
-            <a href="/projects/new" class="icon-button">
-                <img src="/static/icons/new.png" alt="New Project" class="nav-icon">
-            </a>
-        </div>
-
+        <h3>Coming Soon</h3>
         {% endblock %}
     </div>
 </body>

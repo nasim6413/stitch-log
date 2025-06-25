@@ -11,7 +11,7 @@ def projects_home():
     
     projects_list = projects.list_projects(conn)
     
-    return render_template('home.html', projects_list=projects_list)
+    return render_template('project_list.html', projects_list=projects_list)
 
 # Project page
 @p.route('/<project_name>', methods=['GET', 'POST'])
@@ -28,7 +28,7 @@ def project_page(project_name):
             projects.project_del_all_floss(conn, project_name)
             projects.delete_project(conn, project_name)
 
-            return redirect(url_for('projects_home'))
+            return redirect(url_for('projects.projects_home'))
         
         elif action == "amend-project":
             return redirect(url_for('projects.floss_setup', project_name=project_name))
