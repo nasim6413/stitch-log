@@ -1,4 +1,5 @@
 import os
+import uuid
 from flask import Flask
 from stitchlog.models import setup
 
@@ -12,17 +13,15 @@ def create_app():
         pass
 
     # Creates a secret key if one doesn't exist
-    secret_key_path = os.path.join(app.instance_path, 'config')
+    secret_key_path = os.path.join(app.instance_path, 'config.py')
+    secret_key = uuid.uuid4().hex
+
     if not os.path.exists(secret_key_path):
-        with open(secret_key_path, 'wb') as f:
-            f.write(os.urandom(24))
+        with open(secret_key_path, 'w') as f:
+            f.write(f"SECRET_KEY = '{secret_key}'\n")
 
     app.config.from_object('config') # Base config.py
     app.config.from_pyfile('config.py', silent=True) # instance/config.py will override
-
-    # Load the generated or existing key
-    with open(secret_key_path, 'rb') as f:
-        app.config['SECRET_KEY'] = f.read()
 
     app.teardown_appcontext(setup.close_db)
     

@@ -59,7 +59,7 @@ def project_setup():
                 return redirect(url_for('projects.project_setup'))
             
             # Checks that project is not already existing
-            if projects.search_project(conn, project_name):
+            if projects.list_project_details(conn, project_name):
                 session['error'] = f'Project already exists!'
                 return redirect(url_for('projects.project_setup'))
             

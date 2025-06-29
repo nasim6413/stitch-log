@@ -1,5 +1,5 @@
 import pandas as pd
-import re
+import os
 import sqlite3
 from flask import g, current_app
 from ..utils import *
@@ -89,3 +89,28 @@ def close_db(e=None):
     db = g.pop('db', None)
     if db is not None:
         db.close()
+
+def get_username():
+
+    """Access the USERNAME from app config."""
+    
+    username = current_app.config.get('USERNAME', None)
+
+    return username
+
+def set_username(app, username):
+
+    """Set the USERNAME in instance/config.py."""
+
+    config_path = os.path.join(app.instance_path, 'config.py')
+
+    try: 
+        with open(config_path, 'a') as f:
+            f.write(f'\nUSERNAME = "{username}"\n')
+
+        app.config.from_pyfile('config.py', silent=True)  # Reload config
+
+        return True
+    
+    except:
+        return False

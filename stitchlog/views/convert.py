@@ -16,11 +16,16 @@ def convert_page():
 
         if brand and fno:
             converted_brand, rows = floss.gen_convert(conn, brand, fno)
-                
-            return render_template('convert.html', brand=brand, converted_brand=converted_brand, rows=rows)
+
+            if not rows:
+                error = f'Conversion does not exist.'
+                return render_template('convert.html', error=error)
+
+            else:
+                return render_template('convert.html', brand=brand, converted_brand=converted_brand, rows=rows)
         
         else:
-            error= f'Conversion does not exist.'
+            error = f'Please input valid floss.'
             return render_template('convert.html', error=error)
     
     return render_template('convert.html')

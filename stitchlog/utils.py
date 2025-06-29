@@ -7,7 +7,7 @@ def natural_key(s):
     s = str(s)
     parts = []
     
-    for t in re.split('(\d+)', s):
+    for t in re.split(r'(\d+)', s):
         if t.isdigit():
             parts.append(int(t))
         else:
@@ -32,6 +32,46 @@ def search_stock(conn, brand, fno):
         cursor.close()
         return True
         
+    else:
+        return False
+    
+
+def search_project(conn, name):
+    
+    """Checks whether project exists."""
+    
+    cursor = conn.cursor()
+    cursor.execute("""
+                   SELECT * FROM project_details
+                   WHERE project_name = ?;
+                   """,
+                   (name,))
+    
+    output = cursor.fetchall()
+    cursor.close()
+    
+    if len(output) > 0:
+        return True
+    
+    else:
+        return False
+    
+def search_project_floss(conn, name, brand, fno):
+
+    """Check whether a floss is listed under a project."""
+
+    cursor = conn.cursor()
+    cursor.execute("""
+                    SELECT project_name, brand, fno FROM project_floss
+                    WHERE project_name = ? AND brand = ? AND fno = ?;
+                    """,
+                    (name, brand, fno))
+
+    output = cursor.fetchall()
+    cursor.close()
+
+    if len(output) > 0:
+        return True
     else:
         return False
     
