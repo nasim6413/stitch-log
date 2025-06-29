@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, request, redirect, url_for
-from stitchlog.models import setup, projects, extractor
+from stitchlog.models import setup, projects, extractor, floss
 from io import BytesIO
 
 p = Blueprint('projects', __name__, url_prefix='/projects')
@@ -135,9 +135,9 @@ def floss_setup(project_name):
 
             for f in floss_items:
                 f = f.strip() # Floss added by user will have whitespace
-                
-                if setup.validate_floss_input(f):
-                    brand, fno = setup.fix_input(f)
+                brand, fno = floss.fix_floss_input(f)
+
+                if brand and fno:
                     projects.project_add_floss(conn, project_name, brand, fno)
 
             session.clear()

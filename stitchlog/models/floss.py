@@ -1,5 +1,36 @@
 from ..utils import *
+    
+def fix_floss_input(item):
+    
+    """Fixes floss input."""
+    
+    match = validate_floss_input(item)
 
+    if match:
+        brand = match.group(1)
+        fno = match.group(2)
+        
+        if brand.upper() == BRANDS[0]:
+            brand = brand.upper() 
+            
+        if brand.capitalize() == BRANDS[1]:
+            brand = brand.capitalize()
+        
+        if fno.capitalize() == 'White' or fno.capitalize() == 'Ecru':
+            fno = fno.capitalize()
+            
+        # Fixes pattern numbers that include letter
+        fno_pattern = r'(.)(\d{1,4})'
+        fno_match = re.match(fno_pattern, fno, re.IGNORECASE)
+
+        if fno_match:
+            fno = fno_match.group(1).upper() + fno_match.group(2)
+        
+        return brand, fno
+    
+    else:
+        return False, False
+    
 def gen_convert(conn, brand, fno):
     
     """Returns all possible conversions for a specified floss and whether available."""

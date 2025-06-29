@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, request, redirect, url_for
-from stitchlog.models import setup, stock
+from stitchlog.models import setup, floss, stock
 
 s = Blueprint('stock', __name__, url_prefix='/stock')
 
@@ -12,8 +12,9 @@ def stock_page():
     if request.method == 'POST':
         item = request.form['floss'].strip()
         
-        if setup.validate_floss_input(item):
-            brand, fno = setup.fix_input(item)
+        brand, fno = floss.fix_floss_input(item)
+        
+        if brand and fno:
             action = request.form['button']
             
             if action == 'add':

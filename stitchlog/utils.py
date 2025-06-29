@@ -34,3 +34,11 @@ def search_stock(conn, brand, fno):
         
     else:
         return False
+    
+def validate_floss_input(item):
+    
+    """Input validation for floss entries."""
+    
+    match = re.match(FLOSS_PATTERN, item, re.IGNORECASE)
+    
+    return match if match else False
