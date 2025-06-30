@@ -9,7 +9,7 @@
                 <tr>
                     <th>Project</th>
                     <th>Start Date</th>
-                    <th>End Date</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -17,7 +17,11 @@
                     <tr>               
                     <td><a href="/projects/{{p[0]}}" id="project-page">{{ p[0] }}</a></td>
                     <td>{{ p[1] }}</td>
-                    <td>{{ p[2] }}</td>
+                    <td>  <div class="progress-cell">
+                            <div class="progress-bar" style="width: {{ p[3] }}%;"></div>
+                            <span>{{ 'completed' if p[2] else 'ongoing' }}</span>
+                        </div>
+                    </td>
                     </tr>
                 {% endfor %}
             </tbody>

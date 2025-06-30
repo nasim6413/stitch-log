@@ -11,19 +11,29 @@
         <div class="form-field">
             <label for="project-name">Project Name*</label><br>
             <input type="text" name="project-name" id="project-name" placeholder="Enter project name"
-                   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="{{ project_name or '' }}">
+                   autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="{{ data['project_name'] or '' }}">
         </div>
 
         <div class="form-field">
             <label for="start-date">Start Date*</label><br>
-            <input type="date" name="start-date" id="start-date" value="{{ start_date or '' }}">
+            <input type="date" name="start-date" id="start-date" value="{{ data['start_date'] or '' }}">
+        </div>
+
+        <div class="form-field">
+            <label for="end-date">End Date</label><br>
+            <input type="date" name="end-date" id="end-date" value="{{ data['end_date'] or '' }}">
+        </div>
+
+        <div class="form-field">
+            <label for="points">Progress</label>
+            <input type="range" id="project-progress" name="progress" min="0" max="100" value="{{ data['progress'] or '' }}">
         </div>
 
         <div>
             {% if error %}
             <p class="error-message">{{ error }}</p>
             {% endif %}
-            <button class="button" type="submit" name="button" value="create" id="button_add">Create</button>
+            <button class="button" type="submit" name="button" value="{{ data['button'] }}" id="button_add">{{ data['button'] }}</button>
         </div>
 
     </form>

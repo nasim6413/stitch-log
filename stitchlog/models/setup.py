@@ -45,7 +45,8 @@ def set_up(conn):
         CREATE TABLE project_details (
             project_name TEXT NOT NULL PRIMARY KEY,
             start_date TIMESTAMP NOT NULL,
-            end_date TIMESTAMP
+            end_date TIMESTAMP,
+            progress NOT NULL
         );
     """)
     

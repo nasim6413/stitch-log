@@ -17,6 +17,6 @@ def home_page():
         return redirect(url_for('home.home_page'))
         
     floss_count = len(stock.stock_list(conn))
-    project_count = len(projects.list_projects(conn))
+    project_count = len(projects.list_project_details(conn))
 
     return render_template('home.html', username=username, floss_count=floss_count, project_count=project_count)

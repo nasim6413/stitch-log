@@ -1,6 +1,6 @@
 from ..utils import *
 
-def create_project(conn, name, start_date):
+def create_project(conn, name, start_date, end_date = False, progress = 1):
     
     """Creates new cross-stitch project (if not existing)."""
     
@@ -13,10 +13,10 @@ def create_project(conn, name, start_date):
     
     else:
         cursor.execute("""
-                       INSERT INTO project_details (project_name, start_date)
-                       VALUES (?, ?);
+                       INSERT INTO project_details (project_name, start_date, end_date, progress)
+                       VALUES (?, ?,  ?, ?);
                        """,
-                       (name, start_date))
+                       (name, start_date, end_date, progress))
         
         conn.commit()
         cursor.close()
@@ -42,10 +42,41 @@ def delete_project(conn, name):
     
     else:
         return False 
+
+def list_project_details(conn, project_name = False):
+    
+    """Returns list of all projects with start dates and progress."""
+    
+    cursor = conn.cursor()
+
+    # Default returns all project details
+    if not project_name:
+        cursor.execute("""
+                    SELECT project_name, start_date, (end_date IS NOT NULL) as ongoing, progress
+                    FROM project_details;
+                    """)
+    
+    # Else returns specific project details
+    elif project_name:
+        cursor.execute("""
+            SELECT *
+            FROM project_details
+            WHERE project_name = ?;
+            """,
+            (project_name,))
+    
+    try:
+        output = cursor.fetchall()
+        cursor.close()
+        return output
+
+    except:
+        cursor.close()
+        return False
     
 def update_project(conn, name, end_date):
     
-    """Updates project's end date.""" #TODO: add more functionality to this
+    """Updates project's end date."""
     
     cursor = conn.cursor()
     
@@ -55,6 +86,26 @@ def update_project(conn, name, end_date):
                        WHERE project_name = ?;
                        """,
                        (end_date, name))
+        
+        conn.commit()
+        cursor.close()
+        return True
+    
+    else:
+        return False
+    
+def update_project_progress(conn, name, progress):
+    
+    """Updates project's progress."""
+    
+    cursor = conn.cursor()
+    
+    if search_project(conn, name):
+        cursor.execute("""UPDATE project_details
+                       SET progress = ?
+                       WHERE project_name = ?;
+                       """,
+                       (progress, name))
         
         conn.commit()
         cursor.close()
@@ -124,29 +175,8 @@ def project_del_all_floss(conn, name):
 
     else:
         return False
-
     
-def list_projects(conn):
-    
-    """Returns list of all projects with start and end dates."""
-    
-    cursor = conn.cursor()
-    cursor.execute("""
-                   SELECT project_name, start_date, end_date
-                   FROM project_details;
-                   """)
-    
-    try:
-        output = cursor.fetchall()
-        cursor.close()
-        return output
-
-    except:
-        cursor.close()
-        return False
-
-
-def list_project_details(conn, name):
+def list_project_floss(conn, name):
     
     """Returns given project's floss details and whether floss is in stock."""
     

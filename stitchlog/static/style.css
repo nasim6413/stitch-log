@@ -159,6 +159,71 @@ tbody tr:hover {
     padding: 0.5rem 0;
 }
 
+.progress-cell {
+    position: relative;
+    background-color: #eee;
+    border-radius: 5px;
+    overflow: hidden;
+    height: 24px;
+}
+
+.progress-bar {
+    position: absolute;
+    height: 100%;
+    background-color: rgba(100, 200, 255, 0.6); /* light blue, semi-transparent */
+    transition: width 0.4s ease;
+}
+
+.progress-cell span {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+    line-height: 24px;
+    color: #333;
+    font-weight: bold;
+}
+
+.project-summary-card {
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.project-summary-card h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.4em;
+}
+
+.project-summary-card p {
+    margin: 0 0 15px;
+    font-size: 0.95em;
+}
+
+.progress-container {
+    position: relative;
+    background-color: #ddd;
+    border-radius: 10px;
+    height: 24px;
+    overflow: hidden;
+}
+
+.progress-container span {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    line-height: 24px;
+    font-weight: bold;
+    color: #fff;
+    font-size: 0.85em;  /* smaller label */
+}
+
+
 /* Buttons */
 
 .button {
