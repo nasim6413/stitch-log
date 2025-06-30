@@ -30,8 +30,8 @@
         </div>
 
         <div>
-            {% if error %}
-            <p class="error-message">{{ error }}</p>
+            {% if data['error'] %}
+            <p class="error-message">{{ data['error'] }}</p>
             {% endif %}
             <button class="button" type="submit" name="button" value="{{ data['button'] }}" id="button_add">{{ data['button'] }}</button>
         </div>

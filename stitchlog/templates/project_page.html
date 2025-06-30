@@ -8,7 +8,7 @@
     <h2>{{ data['project_name'] }}</h2>
     <p>
         You started this project on <strong>{{ data['project_date'] }}</strong>  
-        and have been working on it for <strong>{{ data['project_days'] }}</strong> day{{ 's' if data['project_days'] != 1 else '' }}.
+        and {{ 'worked' if data['project_prog'] == 100 else 'have been working' }} on it for <strong>{{ data['project_days'] }}</strong> day{{ 's' if data['project_days'] != 1 else '' }}.
     </p>
 
     <div class="progress-container">

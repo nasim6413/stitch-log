@@ -8,7 +8,6 @@
             <thead>
                 <tr>
                     <th>Project</th>
-                    <th>Start Date</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -16,10 +15,9 @@
                 {% for p in projects_list %}
                     <tr>               
                     <td><a href="/projects/{{p[0]}}" id="project-page">{{ p[0] }}</a></td>
-                    <td>{{ p[1] }}</td>
-                    <td>  <div class="progress-cell">
-                            <div class="progress-bar" style="width: {{ p[3] }}%;"></div>
-                            <span>{{ 'completed' if p[2] else 'ongoing' }}</span>
+                    <td>  
+                        <div class="progress-cell">
+                            <div class="progress-bar" style="width: {{ p[1] }}%;"></div>
                         </div>
                     </td>
                     </tr>

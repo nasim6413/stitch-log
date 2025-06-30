@@ -52,7 +52,7 @@ def list_project_details(conn, project_name = False):
     # Default returns all project details
     if not project_name:
         cursor.execute("""
-                    SELECT project_name, start_date, (end_date IS NOT NULL) as ongoing, progress
+                    SELECT project_name, progress
                     FROM project_details;
                     """)
     

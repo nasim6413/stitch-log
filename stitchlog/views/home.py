@@ -17,6 +17,7 @@ def home_page():
         return redirect(url_for('home.home_page'))
         
     floss_count = len(stock.stock_list(conn))
-    project_count = len(projects.list_project_details(conn))
+    projects_total = projects.list_project_details(conn)
+    projects_ongoing = len([p for p in projects_total if p[1] < 100]) # Only count projects that are still in progress
 
-    return render_template('home.html', username=username, floss_count=floss_count, project_count=project_count)
+    return render_template('home.html', username=username, floss_count=floss_count, project_count=projects_ongoing)

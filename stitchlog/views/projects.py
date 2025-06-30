@@ -40,7 +40,7 @@ def project_page(project_name):
     
     if request.method == 'POST':
         action = request.form['button']
-        
+
         if action == "delete-project":
             projects.project_del_all_floss(conn, project_name)
             projects.delete_project(conn, project_name)
@@ -91,12 +91,29 @@ def project_setup(project_name = None):
         form_end_date = session['end_date'] = request.form.get('end-date', '')
         form_progress = session['progress'] = int(request.form.get('progress', 1) or 1)
 
+        # Validation check for required fields
+        if not form_project_name or not form_start_date:
+            session['error'] = 'Please input relevant details!'
+            return redirect(url_for('projects.project_setup', project_name=project_name))
+
+        # Data validation
+        val_start_date = datetime.strptime(form_start_date, "%Y-%m-%d").date()
+
+        if form_end_date:
+            val_end_date = datetime.strptime(form_end_date, "%Y-%m-%d").date()
+        else:
+            val_end_date = date.today()
+
+        if val_start_date > date.today() or val_end_date < val_start_date:
+            session['error'] = f'Please input valid start and/or end dates!'
+            return redirect(url_for('projects.project_setup', project_name=project_name))
+        
+        if (form_end_date and form_progress < 100) or (form_progress == 100 and not form_end_date):
+            session['error'] = f'Please update completion information.'
+            return redirect(url_for('projects.project_setup', project_name=project_name))
+
+
         if action == 'create':
-            # Validation check for required fields
-            if not form_project_name or not form_start_date:
-                session['error'] = 'Please input relevant details!'
-                return redirect(url_for('projects.project_setup'))
-            
             # Validation check whether project exists already
             if projects.list_project_details(conn, form_project_name):
                 session['error'] = 'Project already exists!'
@@ -108,18 +125,11 @@ def project_setup(project_name = None):
                 return redirect(url_for('projects.floss_setup', project_name=form_project_name))
 
         elif action == 'update':
-            # Validation check for required fields
-            if not form_project_name or not form_start_date:
-                session['error'] = 'Please input relevant details!'
-                print(session['error'])
-                return redirect(url_for('projects.project_setup', project_name=form_project_name))
-            
-            else:
-                # Updates project details
-                projects.update_project(conn, form_project_name, form_end_date)
-                projects.update_project_progress(conn, form_project_name, form_progress)
+            # Updates project details
+            projects.update_project(conn, form_project_name, form_end_date)
+            projects.update_project_progress(conn, form_project_name, form_progress)
 
-                return redirect(url_for('projects.floss_setup', project_name=form_project_name))
+            return redirect(url_for('projects.floss_setup', project_name=form_project_name))
 
     return render_template('project_setup.html', data=data)
 
