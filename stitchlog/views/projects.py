@@ -122,6 +122,8 @@ def project_setup(project_name = None):
             # Else creates project
             else:
                 projects.create_project(conn, form_project_name, form_start_date, form_end_date, form_progress)
+
+                session.clear()
                 return redirect(url_for('projects.floss_setup', project_name=form_project_name))
 
         elif action == 'update':
@@ -129,6 +131,7 @@ def project_setup(project_name = None):
             projects.update_project(conn, form_project_name, form_end_date)
             projects.update_project_progress(conn, form_project_name, form_progress)
 
+            session.clear()
             return redirect(url_for('projects.floss_setup', project_name=form_project_name))
 
     return render_template('project_setup.html', data=data)

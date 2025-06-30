@@ -53,7 +53,8 @@ def list_project_details(conn, project_name = False):
     if not project_name:
         cursor.execute("""
                     SELECT project_name, progress
-                    FROM project_details;
+                    FROM project_details
+                    ORDER BY progress;
                     """)
     
     # Else returns specific project details
