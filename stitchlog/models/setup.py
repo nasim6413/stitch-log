@@ -1,4 +1,4 @@
-import pandas as pd
+import csv
 import os
 import sqlite3
 from flask import g, current_app
@@ -60,16 +60,25 @@ def set_up(conn):
         );
     """)
     
-    # Retrieving conversion data
-    dmc_to_anchor = pd.read_csv('stitchlog/data/dmc_to_anchor.csv', names=['dmc', 'anchor', 'hex', 'colour'])
-    dmc_to_anchor = dmc_to_anchor[dmc_to_anchor.anchor != 'NA']
-            
-    anchor_to_dmc = pd.read_csv('stitchlog/data/anchor_to_dmc.csv', names=['anchor', 'dmc', 'hex', 'colour'])
-    anchor_to_dmc = anchor_to_dmc[anchor_to_dmc.dmc != 'NA']
-    
-    # Populate conversion tables
-    dmc_to_anchor.to_sql('dmc_to_anchor', conn, if_exists='append', index = False)
-    anchor_to_dmc.to_sql('anchor_to_dmc', conn, if_exists='append', index = False)
+    # Read and insert dmc_to_anchor data
+    with open('stitchlog/data/dmc_to_anchor.csv', newline='', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            if row[1] != 'NA':  # anchor value
+                cursor.execute(
+                    'INSERT INTO dmc_to_anchor (dmc, anchor, hex, colour) VALUES (?, ?, ?, ?)',
+                    (row[0], row[1], row[2], row[3])
+                )
+
+    # Read and insert anchor_to_dmc data
+    with open('stitchlog/data/anchor_to_dmc.csv', newline='', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            if row[1] != 'NA':  # dmc value
+                cursor.execute(
+                    'INSERT INTO anchor_to_dmc (anchor, dmc, hex, colour) VALUES (?, ?, ?, ?)',
+                    (row[0], row[1], row[2], row[3])
+                )
     
     return
 
