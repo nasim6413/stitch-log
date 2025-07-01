@@ -1,0 +1,13 @@
+services:
+  stitch-log:
+    container_name: stitch-log
+    build:
+      context: .
+      dockerfile: Dockerfile
+      no_cache: true
+    image: stitch-log
+    restart: unless-stopped    
+    ports:
+      - "5000:5000"
+    volumes:
+    - ./instance:/stitch-log/instance
