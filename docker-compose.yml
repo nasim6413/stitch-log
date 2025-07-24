@@ -8,6 +8,6 @@ services:
     image: stitch-log
     restart: unless-stopped    
     ports:
-      - "5000:5000"
+      - "80:80"
     volumes:
     - ./instance:/stitch-log/instance
