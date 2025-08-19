@@ -31,7 +31,7 @@ cd stitch-log
 docker compose up --build
 ```
 
-The app will be available at http://localhost:5000
+The app will be available at http://localhost, or `http://<raspberrypi-ip>` if accessing from another device. 
 
 ### (Optional) Backups
 You can set up a cron job to create a regular backup using https://crontab.guru/.
