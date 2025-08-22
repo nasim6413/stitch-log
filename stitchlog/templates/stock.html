@@ -3,12 +3,10 @@
 <title>Floss Stock</title>
 {% block body %}
 
-<div>
-    <form method="POST">
-        <input type="text" name="floss" placeholder="Enter floss" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-        <button class="button" type="submit" name="button" value="add" id="button_add">Add</button>
-        <button class="button" type="submit" name="button" value="delete" id="button_delete">Delete</button>
-    </form>
+<div class="input-wrapper">
+  <input type="text" id="floss" name="floss" placeholder="Enter floss" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <button class="button" type="button" name="button" value="add" id="button_add">Add</button>
+  <button class="button" type="button" name="button" value="delete" id="button_delete">Delete</button>
 </div>
 
 <div class="table-wrapper">
@@ -19,15 +17,18 @@
         <th>Number</th>
       </tr>
     </thead>
-    <tbody>
-      {% for row in rows %}
-        <tr>               
-          <td>{{ row[0] }}</td>
-          <td>{{ row[1] }}</td>
-        </tr>
-      {% endfor %}
+    <tbody id="stock-table-body">
     </tbody>
   </table>
 </div>
+
+<script>
+const SCRIPT_ROOT = {{ request.script_root|tojson }};
+const add_url = `${SCRIPT_ROOT}/stock/add`;
+const delete_url = `${SCRIPT_ROOT}/stock/delete`;
+const list_url = `${SCRIPT_ROOT}/stock/list`;
+</script>
+
+<script src="{{ url_for('static', filename='js/stock.js') }}"></script>
 
 {% endblock %}
