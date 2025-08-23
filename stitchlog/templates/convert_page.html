@@ -1,0 +1,27 @@
+{% extends 'home.html' %}
+
+<title>Floss Conversion</title>
+
+{% block body %}
+    <div id="input-wrapper">
+        <input type="text" id="floss" name="floss" placeholder="Enter floss" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <button class="button" type="button" name="button" value="convert" id="button_convert">Convert</button>
+    </div>
+
+    <div>
+        <table>
+            <thead id="conversion-table-header">
+            </thead>
+            <tbody id="conversion-table-body">
+            </tbody>
+        </table>
+    </div>
+
+<script>
+const SCRIPT_ROOT = {{ request.script_root|tojson }};
+const convert_url = `${SCRIPT_ROOT}/convert`;
+</script>
+
+<script src="{{ url_for('static', filename='js/convert.js') }}"></script>
+
+{% endblock %}

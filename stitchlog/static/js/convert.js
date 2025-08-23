@@ -1,0 +1,54 @@
+// Retrieve input & load table
+function convertFloss() {
+    const floss = document.getElementById('floss').value;
+
+    // Fixes input data
+    fetch(`${convert_url}/${floss}`)
+    .then(response => response.json())
+    .then(fixedData => {
+        if (fixedData.status !== "ok") {
+            alert(fixedData.message || "Invalid input");
+            return;
+        }
+        
+        // Converts floss with fixed input
+        fetch(`${convert_url}/${fixedData.brand}-${fixedData.fno}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data[0].status === "ok") {
+                const thead = document.getElementById('conversion-table-header');
+                const tbody = document.getElementById('conversion-table-body');
+
+                // Clears input & table
+                document.getElementById('floss').value = '';
+                thead.innerHTML = '';
+                tbody.innerHTML = '';
+
+                // Create header
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<th>${data[0].brand}</th>
+                                <th>${data[0].converted_brand}</th>
+                                <th>Hex</th>
+                                <th>Available</th>`;
+                thead.appendChild(tr);         
+
+                // Create table
+                data.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${item.brand_fno}</td>
+                                    <td>${item.converted_fno}</td>
+                                    <td style="display: flex; align-items: center;">
+                                        <span style="color: black; flex: 1;">${item.hex}</span>
+                                        <span style="width: 60px; height: 20px; margin-left: 10px; border: 1px solid #ccc; background-color: #${item.hex}"></span>
+                                    </td>
+                                    <td style="color: ${item.availability ? 'green' : 'red'}">${item.availability ? 'available' : 'not available'}</td>`;
+                    tbody.appendChild(tr);
+                    });
+                } else {
+                        alert(data.message || "Error");
+                    }
+                });
+            });
+        }
+
+document.getElementById('button_convert').addEventListener('click', () => convertFloss());

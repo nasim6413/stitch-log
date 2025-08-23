@@ -11,7 +11,12 @@ def stock_page():
 def stock_list():
     conn = setup.get_db()
     rows = stock.stock_list(conn)
-    return jsonify([{"brand": r[0], "fno": r[1]} for r in rows])
+    return jsonify([
+        {
+            "brand": r[0], 
+            "fno": r[1]
+            } for r in rows
+        ])
 
 @s.route('/add', methods=['POST'])
 def stock_add_item():
@@ -24,7 +29,12 @@ def stock_add_item():
     if brand and fno:
         stock.stock_add(conn, brand, fno)
         return jsonify({"status": "ok"})
-    return jsonify({"status": "error", "message": "Invalid input!"}), 400
+    return jsonify(
+        {
+            "status": "error", 
+            "message": "Invalid input!"
+            }
+        ), 400
 
 @s.route('/delete', methods=['POST'])
 def stock_delete_item():
@@ -36,6 +46,15 @@ def stock_delete_item():
     
     if brand and fno:
         stock.stock_del(conn, brand, fno)
-        return jsonify({"status": "ok"})
+        return jsonify(
+            {
+                "status": "ok"
+                }
+            )
 
-    return jsonify({"status": "error", "message": "Invalid input!"}), 400
+    return jsonify(
+        {
+            "status": "error", 
+            "message": "Invalid input!"
+            }
+        ), 400

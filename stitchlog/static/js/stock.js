@@ -30,10 +30,10 @@ function sendStock(action) {
 
     // Accesses API depending on URL used
     fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ floss: floss })
-    })
+        })
     .then(response => response.json())
     .then(result => {
         if (result.status === "ok") {
@@ -42,7 +42,8 @@ function sendStock(action) {
         } else {
             alert(result.message || "Error");
         }
-    });
+    })
+    .then(() => loadStock());
 }
 
 // Button function calls
