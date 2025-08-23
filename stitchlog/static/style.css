@@ -94,12 +94,22 @@ p {
 
 /* Form / Input */
 .input-wrapper {
-    text-align: center;
-    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px; /* spacing for the whole row */
+}
+
+.input-wrapper input[type="text"] {
+    height: 30px;
+    padding: 8px 10px;
+    box-sizing: border-box;
+    margin: 0; /* remove extra margin */
 }
 
 input[type="text"] {
-    padding: 8px 12px;
+    padding: 8px 10px;
     width: 60%;
     max-width: 300px;
     border: 1px solid #ccc;
@@ -133,6 +143,7 @@ label {
 
 table {
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
     font-size: 14px;
 }
@@ -242,11 +253,24 @@ tbody tr:hover {
   display: inline-block;
   border-radius: 5px;
   font-size: 15px;
-  padding: 8px 16px;
-  height: 20px;
   margin: 5px;
   cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 10px;
   box-sizing: border-box;
+}
+
+.button:hover{
+  opacity: 0.6;
+}
+
+#button_add {
+  background-color: mediumseagreen;
+}
+
+#button_delete{
+  background-color: tomato;
 }
 
 .icon-button {
@@ -260,18 +284,6 @@ tbody tr:hover {
 
 .icon-button:hover {
   opacity: 0.6;
-}
-
-.button:hover{
-  opacity: 0.6;
-}
-
-#button_add {
-  background-color: mediumseagreen;
-}
-
-#button_delete{
-  background-color: tomato;
 }
 
 /* Divs */
