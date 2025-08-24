@@ -9,6 +9,8 @@
   <button class="button" type="button" name="button" value="delete" id="button_delete">Delete</button>
 </div>
 
+<div id="error-message"></div>
+
 <div class="table-wrapper">
   <table>
     <thead>
@@ -29,6 +31,6 @@ const delete_url = `${SCRIPT_ROOT}/stock/delete`;
 const list_url = `${SCRIPT_ROOT}/stock/list`;
 </script>
 
-<script src="{{ url_for('static', filename='js/stock.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/stock.js') }}"></script>
 
 {% endblock %}

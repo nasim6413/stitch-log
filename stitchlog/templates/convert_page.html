@@ -8,6 +8,8 @@
         <button class="button" type="button" name="button" value="convert" id="button_convert">Convert</button>
     </div>
 
+    <div id="error-message"></div>
+
     <div>
         <table>
             <thead id="conversion-table-header">
@@ -22,6 +24,6 @@ const SCRIPT_ROOT = {{ request.script_root|tojson }};
 const convert_url = `${SCRIPT_ROOT}/convert`;
 </script>
 
-<script src="{{ url_for('static', filename='js/convert.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/convert.js') }}"></script>
 
 {% endblock %}

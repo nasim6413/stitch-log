@@ -1,13 +1,18 @@
+import { showErrorMessage, clearMessage } from './utils.js';
+
 // Retrieve input & load table
 function convertFloss() {
+    clearMessage()
     const floss = document.getElementById('floss').value;
 
     // Fixes input data
     fetch(`${convert_url}/${floss}`)
     .then(response => response.json())
     .then(fixedData => {
+
+        // Invalid data
         if (fixedData.status !== "ok") {
-            alert(fixedData.message || "Invalid input");
+            showErrorMessage(fixedData.message);
             return;
         }
         
@@ -38,14 +43,14 @@ function convertFloss() {
                     tr.innerHTML = `<td>${item.brand_fno}</td>
                                     <td>${item.converted_fno}</td>
                                     <td style="display: flex; align-items: center;">
-                                        <span style="color: black; flex: 1;">${item.hex}</span>
+                                        <span style="color: black; flex: 1;">#${item.hex}</span>
                                         <span style="width: 60px; height: 20px; margin-left: 10px; border: 1px solid #ccc; background-color: #${item.hex}"></span>
                                     </td>
                                     <td style="color: ${item.availability ? 'green' : 'red'}">${item.availability ? 'available' : 'not available'}</td>`;
                     tbody.appendChild(tr);
                     });
                 } else {
-                        alert(data.message || "Error");
+                        showErrorMessage(data[0].message);
                     }
                 });
             });
