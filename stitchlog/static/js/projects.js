@@ -19,12 +19,11 @@ function loadProjects () {
                                 ${item.project_progress}%
                             </div>
                             </div></td>`;
-            // tr.setAttribute('data-floss', `${item.brand}-${item.fno}`)
             tbody.appendChild(tr);
     })
 })
 
-// Create new project
-function createProject () {
-    fetch()
-}
+// // Create new project
+// function createProject () {
+//     fetch()
+// }

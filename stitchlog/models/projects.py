@@ -1,4 +1,4 @@
-from ..utils import *
+from ..utils.utils import search_project, search_project_floss, natural_key
 
 # LIST PROJECTS
 def list_all_projects(conn):

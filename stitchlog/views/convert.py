@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, jsonify
 from stitchlog.models import floss, setup
+from ..utils.responses import *
 
 c = Blueprint('convert', __name__, url_prefix='/convert')
 
@@ -13,32 +14,24 @@ def converted_input(item):
     brand, fno = floss.fix_floss_input(item)
     
     if brand or fno:
-        return jsonify(
+        return success_response(
             {
-            "status": "ok",
             "brand": brand,
             "fno": fno
             }
         )
                 
     else:
-        return jsonify(
-            {
-                "status": "error", 
-                "message": "Invalid input!"
-                }
-            ), 400
+        return error_response("Invalid input!")
     
-
 @c.route('/<brand>-<fno>', methods=['GET'])
 def converted_page(brand, fno):
     conn = setup.get_db()
     converted_brand, rows = floss.gen_convert(conn, brand, fno)
 
     if rows:
-        return jsonify([
+        return success_response([
             {
-                "status" : "ok",
                 "brand" : brand,
                 "brand_fno": r[0],
                 "converted_brand" : converted_brand,
@@ -49,9 +42,4 @@ def converted_page(brand, fno):
         ])
         
     else:
-        return jsonify([
-            {
-                "status": "error", 
-                "message": "Conversion does not exist!"
-                }
-            ]), 400
+        return error_response("Conversion does not exist!")

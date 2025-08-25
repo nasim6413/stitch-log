@@ -17,10 +17,10 @@ function convertFloss() {
         }
         
         // Converts floss with fixed input
-        fetch(`${convert_url}/${fixedData.brand}-${fixedData.fno}`)
+        fetch(`${convert_url}/${fixedData.data.brand}-${fixedData.data.fno}`)
         .then(response => response.json())
-        .then(data => {
-            if (data[0].status === "ok") {
+        .then(result => {
+            if (result.status === "ok") {
                 const thead = document.getElementById('conversion-table-header');
                 const tbody = document.getElementById('conversion-table-body');
 
@@ -31,14 +31,14 @@ function convertFloss() {
 
                 // Create header
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<th>${data[0].brand}</th>
-                                <th>${data[0].converted_brand}</th>
+                tr.innerHTML = `<th>${result.data[0].brand}</th>
+                                <th>${result.data[0].converted_brand}</th>
                                 <th>Hex</th>
                                 <th>Available</th>`;
                 thead.appendChild(tr);         
 
                 // Create table
-                data.forEach(item => {
+                result.data.forEach(item => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td>${item.brand_fno}</td>
                                     <td>${item.converted_fno}</td>
@@ -50,7 +50,7 @@ function convertFloss() {
                     tbody.appendChild(tr);
                     });
                 } else {
-                        showErrorMessage(data[0].message);
+                        showErrorMessage(result.message);
                     }
                 });
             });

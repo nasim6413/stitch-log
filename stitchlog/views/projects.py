@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, session, request, redirect, url_fo
 from stitchlog.models import setup, projects, extractor, floss
 from io import BytesIO
 from datetime import datetime, date
-from ..utils import search_project, search_project_floss
+from ..utils.utils import search_project, search_project_floss
+from ..utils.responses import *
 
 p = Blueprint('projects', __name__, url_prefix='/projects')
 
@@ -34,25 +35,13 @@ def project_page_details(project_name):
         details = projects.list_project_details(conn, project_name)
 
         if details:
-            return jsonify({
-                "status" : "ok",
-                "project_name" : details[0],
-                "start_date" : details[1],
-                "end_date" : details[2],
-                "progress" : details[3]
-            })
+            return success_response(details)
         
         else:
-            return jsonify({
-                "status" : "error",
-                "message" : "There a problem in retrieving the project details."
-            })
+            return error_response("There a problem in retrieving the project details.")
     
     else:
-        return jsonify({
-            "status" : "error",
-            "message" : "Project does not exist!"
-        }), 400
+        return error_response("Project does not exist!")
 
 @p.route('/<project_name>/floss', methods=['GET'])
 def project_page_floss(project_name):
@@ -62,7 +51,7 @@ def project_page_floss(project_name):
         rows = projects.list_project_floss(conn, project_name)
 
         if rows:
-            return jsonify([{
+            return success_response([{
                 "status" : "ok",
                 "brand" : r[0],
                 "fno" : r[1],
@@ -71,28 +60,56 @@ def project_page_floss(project_name):
             ])
         
         else:
-            return jsonify({
-                "status" : "none",
-                "message" : "No floss associated with project."
-            })
+            return error_response("No floss associated with project.")
         
     else:
-        return jsonify({
-            "status" : "error",
-            "message" : "Project does not exist!"
-        })
+        return error_response("Project does not exist!")
 
 # Project creation
-# @p.route('/create', methods=['GET', 'POST']):
-# def project_creation():
-#     conn = setup.get_db()
-#     data = request.get_json()
-
+@p.route('/create', methods=['GET', 'POST'])
+def project_creation():
+    conn = setup.get_db()
+    data = request.get_json()
+    
+    # Checks that project is not already existing
+    if not search_project(conn, data['project_name']):
+        result = projects.create_project(conn, data['project_name'], data['start_date'], data['end_date'], data['progress'])
+        
+        # Successful project creation
+        if result:
+            return success_response()
+            
+        else:
+            return error_response("Error in creating project.")
+            
+    else:
+        return error_response("Project already exists!")
+            
 # Project deletion (project AND floss)
-
+@p.route('/<project_name>/delete', methods=['GET'])
+def project_delete(project_name):
+    conn = setup.get_db()
+    
+    # Checks that project exists
+    if search_project(conn, project_name):
+        result_project = projects.delete_project(conn, project_name)
+        result_floss = projects.project_del_all_floss(conn, project_name)
+        
+        # Successful project and floss deletions
+        if result_project and result_floss: 
+            return success_response()
+        
+        else:
+            return error_response("Error when deleting project!")
+            
+    else:
+        return error_response("Project does not exist!")
+    
 # Project amend details
 
 # Project amend floss
+
+# Project retrieve floss from PDF
 
 
 # # Project page

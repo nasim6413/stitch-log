@@ -1,4 +1,4 @@
-from ..utils import *
+from ..utils.utils import *
 
 def stock_list(conn):
     

@@ -6,7 +6,6 @@
 <div class="input-wrapper">
   <input type="text" id="floss" name="floss" placeholder="Enter floss" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
   <button class="button" type="button" name="button" value="add" id="button_add">Add</button>
-  <button class="button" type="button" name="button" value="delete" id="button_delete">Delete</button>
 </div>
 
 <div id="error-message"></div>
@@ -17,14 +16,13 @@
       <tr>
         <th>Brand</th>
         <th>Number</th>
+        <th style="width:25px;"></th>
       </tr>
     </thead>
     <tbody id="stock-table-body">
     </tbody>
   </table>
 </div>
-
-{% endblock %}
 
 <script>
 const SCRIPT_ROOT = {{ request.script_root|tojson }};
@@ -34,3 +32,5 @@ const list_url = `${SCRIPT_ROOT}/stock/list`;
 </script>
 
 <script type="module" src="{{ url_for('static', filename='js/stock.js') }}"></script>
+
+{% endblock %}

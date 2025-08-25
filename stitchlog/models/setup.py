@@ -2,7 +2,7 @@ import csv
 import os
 import sqlite3
 from flask import g, current_app
-from ..utils import *
+from ..utils.utils import *
 
 def set_up(conn):   
     
@@ -90,7 +90,6 @@ def get_db():
         # Configures database path from app's config, not hardcoded
         g.db = sqlite3.connect(current_app.config['DATABASE'])
     return g.db
-
 
 def close_db(e=None):
     
