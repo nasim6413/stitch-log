@@ -1,17 +1,58 @@
 from ..utils import *
 
+# LIST PROJECTS
+def list_all_projects(conn):
+
+    """Returns list of all projects with details."""
+
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+                SELECT project_name, progress
+                FROM project_details
+                ORDER BY progress;
+                """)
+        
+        output = cursor.fetchall()
+        cursor.close()
+        return output
+    
+    except:
+        cursor.close()
+        return False
+
+
+def list_project_details(conn, project_name):
+    
+    """Returns specified project with start dates and progress."""
+    
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT *
+            FROM project_details
+            WHERE project_name = ?;
+            """,
+            (project_name,))
+    
+        output = cursor.fetchall()
+        cursor.close()
+        return output
+
+    except:
+        cursor.close()
+        return False
+
+# PROJECT CREATION / UPDATING
 def create_project(conn, name, start_date, end_date = False, progress = 1):
     
-    """Creates new cross-stitch project (if not existing)."""
+    """Creates new cross-stitch project."""
     
     cursor = conn.cursor()
     
-    if search_project(conn, name):
-        
-        cursor.close()
-        return False
-    
-    else:
+    try:
         cursor.execute("""
                        INSERT INTO project_details (project_name, start_date, end_date, progress)
                        VALUES (?, ?,  ?, ?);
@@ -22,13 +63,17 @@ def create_project(conn, name, start_date, end_date = False, progress = 1):
         cursor.close()
         return True  
     
+    except:
+        cursor.close()
+        return False
+    
 def delete_project(conn, name):
     
     """Deletes project and relevant data."""
     
     cursor = conn.cursor()
     
-    if search_project(conn, name):
+    try:
         cursor.execute("""
                        DELETE FROM project_details
                        WHERE project_name = ?
@@ -40,40 +85,9 @@ def delete_project(conn, name):
         cursor.close()
         return True 
     
-    else:
-        return False 
-
-def list_project_details(conn, project_name = False):
-    
-    """Returns list of all projects with start dates and progress."""
-    
-    cursor = conn.cursor()
-
-    # Default returns all project details
-    if not project_name:
-        cursor.execute("""
-                    SELECT project_name, progress
-                    FROM project_details
-                    ORDER BY progress;
-                    """)
-    
-    # Else returns specific project details
-    elif project_name:
-        cursor.execute("""
-            SELECT *
-            FROM project_details
-            WHERE project_name = ?;
-            """,
-            (project_name,))
-    
-    try:
-        output = cursor.fetchall()
-        cursor.close()
-        return output
-
     except:
         cursor.close()
-        return False
+        return False 
     
 def update_project(conn, name, end_date):
     
@@ -111,6 +125,30 @@ def update_project_progress(conn, name, progress):
         conn.commit()
         cursor.close()
         return True
+    
+    else:
+        return False
+
+# PROJECT FLOSS
+def list_project_floss(conn, project_name):
+    
+    """Returns given project's floss details and whether floss is in stock."""
+    
+    cursor = conn.cursor()
+    if search_project(conn, project_name):
+        cursor.execute("""SELECT project_floss.brand, project_floss.fno, (stock.id IS NOT NULL) AS available
+                       FROM project_floss
+                       LEFT JOIN stock ON project_floss.brand = stock.brand AND project_floss.fno = stock.fno
+                       WHERE project_floss.project_name = ?
+                       ORDER BY project_floss.brand;
+                       """,
+                       (project_name,))
+        
+        output = cursor.fetchall()
+        output = sorted(output, key=lambda row: (row[0].lower(), natural_key(row[1])))
+        
+        cursor.close()
+        return output
     
     else:
         return False
@@ -174,28 +212,5 @@ def project_del_all_floss(conn, name):
         cursor.close()
         return True
 
-    else:
-        return False
-    
-def list_project_floss(conn, name):
-    
-    """Returns given project's floss details and whether floss is in stock."""
-    
-    cursor = conn.cursor()
-    if search_project(conn, name):
-        cursor.execute("""SELECT project_floss.brand, project_floss.fno, (stock.id IS NOT NULL) AS available
-                       FROM project_floss
-                       LEFT JOIN stock ON project_floss.brand = stock.brand AND project_floss.fno = stock.fno
-                       WHERE project_floss.project_name = ?
-                       ORDER BY project_floss.brand;
-                       """,
-                       (name,))
-        
-        output = cursor.fetchall()
-        output = sorted(output, key=lambda row: (row[0].lower(), natural_key(row[1])))
-        
-        cursor.close()
-        return output
-    
     else:
         return False

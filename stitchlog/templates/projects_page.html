@@ -1,0 +1,28 @@
+{% extends 'home.html' %}
+
+<title>Projects</title>
+
+{% block body %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="project-list-body"></tbody>
+        </table>
+    </div>
+
+    <div id="new-project">
+        <button class="button" type="button" name="button" value="create" id="button_new">Create</button>
+    </div>
+{% endblock %}
+
+<script>
+const SCRIPT_ROOT = {{ request.script_root|tojson }};
+const projects_list_url = `${SCRIPT_ROOT}/projects/list`;
+</script>
+
+<script type="module" src="{{ url_for('static', filename='js/projects.js') }}"></script>
