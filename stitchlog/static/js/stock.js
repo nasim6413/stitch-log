@@ -1,7 +1,5 @@
 import { showErrorMessage, clearMessage } from './utils.js';
 
-console.log("stock.js loaded")
-
 // Load stock list
 function loadStock() {
     fetch(list_url)

@@ -4,7 +4,7 @@ export function showErrorMessage(msg) {
     msgDiv.style.textAlign = "center";
     msgDiv.style.text
     msgDiv.style.color = "red";
-    msgDiv.style.marginBottom = "5px";
+    msgDiv.style.marginBottom = "3px";
     msgDiv.textContent = msg;
 }
 

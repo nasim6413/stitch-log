@@ -3,6 +3,9 @@ from io import BytesIO
 # from .helpers import FLOSS_PATTERN
 import re
 
+# def validate_upload(file):
+
+
 def extract_floss(file):
     reader = PdfReader(file)
     pattern = re.compile(r'(DMC|Anchor)\s*(\w?\d{1,4}|B5200|ECRU|White)')

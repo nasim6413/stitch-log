@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, session, request, redirect, url_fo
 from stitchlog.models import setup, projects, extractor, floss
 from io import BytesIO
 from datetime import datetime, date
-from ..utils.utils import search_project, search_project_floss
+from ..utils.search import search_project, search_project_floss
 from ..utils.responses import *
 
 p = Blueprint('projects', __name__, url_prefix='/projects')
@@ -110,6 +110,29 @@ def project_delete(project_name):
 # Project amend floss
 
 # Project retrieve floss from PDF
+@p.route('/<project_name>/extract', methods=['GET', 'POST'])
+def project_floss_extractor(project_name):
+        if "file" not in request.files:
+            return error_response("No file uploaded.")
+
+        # Uploading PDF for floss extraction
+        pattern_file = request.files['file']
+
+#             floss_items = request.form.getlist('floss-item')
+#             floss_list = [tuple(item.strip().split()) for item in floss_items] #Convert to list of tuples
+
+#             if pattern_file.filename == '':
+#                 return redirect(url_for('projects.floss_setup', project_name=project_name))
+
+#             if pattern_file and pattern_file.filename.lower().endswith('.pdf'):
+#                 floss_extracted = extractor.extract_floss(BytesIO(pattern_file.read()))
+
+#                 # Merge existing + new floss entries
+#                 floss_list.extend(floss_extracted)
+                
+#                 session['floss_list'] = floss_list
+
+#                 return redirect(url_for('projects.floss_setup', project_name=project_name))
 
 
 # # Project page
@@ -250,28 +273,7 @@ def project_delete(project_name):
 #     if not floss_list:
 #         floss_list = []
     
-#     if request.method == 'POST':      
-#         action = request.form['button']
 
-#         # Uploading PDF for floss extraction
-#         if action == 'upload': 
-#             pattern_file = request.files['file']
-
-#             floss_items = request.form.getlist('floss-item')
-#             floss_list = [tuple(item.strip().split()) for item in floss_items] #Convert to list of tuples
-
-#             if pattern_file.filename == '':
-#                 return redirect(url_for('projects.floss_setup', project_name=project_name))
-
-#             if pattern_file and pattern_file.filename.lower().endswith('.pdf'):
-#                 floss_extracted = extractor.extract_floss(BytesIO(pattern_file.read()))
-
-#                 # Merge existing + new floss entries
-#                 floss_list.extend(floss_extracted)
-                
-#                 session['floss_list'] = floss_list
-
-#                 return redirect(url_for('projects.floss_setup', project_name=project_name))
         
 #         # Add more floss fields
 #         if action == 'add-floss':

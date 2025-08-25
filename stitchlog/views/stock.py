@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
 from stitchlog.models import setup, floss, stock
-from ..utils.utils import search_stock
+from ..utils.search import search_stock
 from ..utils.responses import *
 
 s = Blueprint('stock', __name__, url_prefix='/stock')
