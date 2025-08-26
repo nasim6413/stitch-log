@@ -10,7 +10,7 @@ function loadProjects () {
 
         data.forEach(item => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td><a href="/projects/${item.project_name}/" id="project-page">
+            tr.innerHTML = `<td><a href="/${item.project_name}/" id="project-page">
                                 ${item.project_name}
                             </td>
                             <td>
@@ -21,9 +21,12 @@ function loadProjects () {
                             </div></td>`;
             tbody.appendChild(tr);
     })
-})
+});
 
 // // Create new project
-// function createProject () {
-//     fetch()
-// }
+// document.getElementById('button_new').addEventListener('click', () => {
+//     window.location.href = `${SCRIPT_ROOT}/new-project`;
+// });
+
+// Loads project list on page render
+window.onload = loadProjects;

@@ -2,9 +2,9 @@ from ..utils.utils import *
     
 def fix_floss_input(item):
     
-    """Fixes floss input."""
+    """Validates and fixes floss input."""
     
-    match = validate_floss_input(item)
+    match = re.match(FLOSS_PATTERN, item, re.IGNORECASE)
 
     if match:
         brand = match.group(1)

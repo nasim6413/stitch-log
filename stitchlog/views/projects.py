@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, session, request, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request
 from stitchlog.models import setup, projects, extractor, floss
-from io import BytesIO
 from datetime import datetime, date
 from ..utils.search import search_project, search_project_floss
 from ..utils.responses import *
@@ -15,17 +14,21 @@ def projects_home():
 def project_page(project_name):
     return render_template('project_details.html')
 
+@p.route('/new-project')
+def project_setup():
+    return render_template('project_setup.html')
+
 # Retrieving project lists/details
 @p.route('/list', methods=['GET'])
 def projects_list():
     conn = setup.get_db()
     rows = projects.list_all_projects(conn)
-    return jsonify([
+    return success_response([
         {
         "project_name" : r[0],
         "project_progress" : r[1]
         } for r in rows
-    ])
+    ]) if rows else error_response("Error in retrieving project list.")
 
 @p.route('/<project_name>/details', methods=['GET'])
 def project_page_details(project_name):
@@ -34,39 +37,13 @@ def project_page_details(project_name):
     if search_project(conn, project_name):
         details = projects.list_project_details(conn, project_name)
 
-        if details:
-            return success_response(details)
-        
-        else:
-            return error_response("There a problem in retrieving the project details.")
+        return success_response(details) if details else error_response("There a problem in retrieving the project details.")
     
     else:
         return error_response("Project does not exist!")
 
-@p.route('/<project_name>/floss', methods=['GET'])
-def project_page_floss(project_name):
-    conn = setup.get_db()
-
-    if search_project(conn, project_name):
-        rows = projects.list_project_floss(conn, project_name)
-
-        if rows:
-            return success_response([{
-                "status" : "ok",
-                "brand" : r[0],
-                "fno" : r[1],
-                "availability" : r[2]
-            } for r in rows
-            ])
-        
-        else:
-            return error_response("No floss associated with project.")
-        
-    else:
-        return error_response("Project does not exist!")
-
 # Project creation
-@p.route('/create', methods=['GET', 'POST'])
+@p.route('/new-project/create', methods=['POST'])
 def project_creation():
     conn = setup.get_db()
     data = request.get_json()
@@ -76,17 +53,13 @@ def project_creation():
         result = projects.create_project(conn, data['project_name'], data['start_date'], data['end_date'], data['progress'])
         
         # Successful project creation
-        if result:
-            return success_response()
-            
-        else:
-            return error_response("Error in creating project.")
+        return success_response() if result else error_response("Error in creating project.")
             
     else:
         return error_response("Project already exists!")
             
 # Project deletion (project AND floss)
-@p.route('/<project_name>/delete', methods=['GET'])
+@p.route('/<project_name>/delete', methods=['POST'])
 def project_delete(project_name):
     conn = setup.get_db()
     
@@ -96,19 +69,11 @@ def project_delete(project_name):
         result_floss = projects.project_del_all_floss(conn, project_name)
         
         # Successful project and floss deletions
-        if result_project and result_floss: 
-            return success_response()
-        
-        else:
-            return error_response("Error when deleting project!")
+        return success_response() if result_project and result_floss else error_response("Error when deleting project!")
             
     else:
         return error_response("Project does not exist!")
     
-# Project amend details
-
-# Project amend floss
-
 # Project retrieve floss from PDF
 @p.route('/<project_name>/extract', methods=['GET', 'POST'])
 def project_floss_extractor(project_name):
@@ -117,22 +82,69 @@ def project_floss_extractor(project_name):
 
         # Uploading PDF for floss extraction
         pattern_file = request.files['file']
+        if extractor.validate_upload(pattern_file):
+            extracted_floss = extractor.extract_floss(pattern_file)
 
-#             floss_items = request.form.getlist('floss-item')
-#             floss_list = [tuple(item.strip().split()) for item in floss_items] #Convert to list of tuples
+            return success_response(extracted_floss) if extracted_floss else error_response("Error in floss extraction.")
+            
+        else:
+            return error_response("Invalid file input!")
+        
+@p.route('/<project_name>/floss', methods=['GET'])
+def project_page_floss(project_name):
+    conn = setup.get_db()
 
-#             if pattern_file.filename == '':
-#                 return redirect(url_for('projects.floss_setup', project_name=project_name))
+    if search_project(conn, project_name):
+        rows = projects.list_project_floss(conn, project_name)
 
-#             if pattern_file and pattern_file.filename.lower().endswith('.pdf'):
-#                 floss_extracted = extractor.extract_floss(BytesIO(pattern_file.read()))
+        return success_response([{
+            "brand" : r[0],
+            "fno" : r[1],
+            "availability" : r[2]
+        } for r in rows
+        ]) if rows else error_response("No floss associated with project.")
+        
+    else:
+        return error_response("Project does not exist!")
+    
+@p.route('/<project_name>/floss/add', methods=['POST'])
+def project_add_floss(project_name):
+    conn = setup.get_db()
+    data = request.get_json()
+    item = data.get('floss', '').strip()
 
-#                 # Merge existing + new floss entries
-#                 floss_list.extend(floss_extracted)
-                
-#                 session['floss_list'] = floss_list
+    brand, fno = floss.fix_floss_input(item)
 
-#                 return redirect(url_for('projects.floss_setup', project_name=project_name))
+    if not search_project_floss(conn, project_name, brand, fno):
+        result = projects.project_add_floss(conn, project_name, brand, fno)
+
+        return success_response() if result else error_response("Error adding floss to project.")
+    
+    else:
+        return error_response("Floss already in project.")
+
+
+@p.route('/<project_name>/floss/delete', methods=['POST'])
+def project_del_floss(project_name):
+    conn = setup.get_db()
+    data = request.get_json()
+    item = data.get('floss', '').strip()
+
+    brand, fno = floss.fix_floss_input(item)
+
+    if search_project_floss(conn, project_name, brand, fno):
+        result = projects.project_delete_floss
+
+        return success_response() if result else error_response("Error deleting floss from project.")
+    
+    else:
+        return error_response("Floss not in project.")
+
+
+
+# Project amend details
+
+# Project amend floss
 
 
 # # Project page
