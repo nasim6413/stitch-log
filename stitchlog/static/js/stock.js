@@ -1,5 +1,35 @@
 import { showErrorMessage, clearMessage } from './utils.js';
 
+// Create table row
+function addFlossRow(tbody, item, green = false) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${item.brand}</td>
+                    <td>${item.fno}</td>
+                    <td style="text-align:center; width:20px;">
+                        <button class="icon-button" id="button-delete">
+                            <img src="/static/icons/delete.png" 
+                                class="small-icon" />
+                            </button>
+                    </td>`;
+
+    tr.setAttribute('data-brand', `${item.brand}`)
+    tr.setAttribute('data-fno', `${item.fno}`)
+
+    // Newly added rows
+    if (green === true) {
+    tr.setAttribute('style', 'background-color:palegreen');
+    }
+
+    // Attach event handler directly inside the loop
+    tr.querySelector('#button-delete').addEventListener('click', () => {
+        deleteStock(tr);
+    });
+
+    tbody.appendChild(tr);
+
+    return tr
+}
+
 // Load stock list
 function loadStock() {
     fetch(list_url)
@@ -14,29 +44,9 @@ function loadStock() {
             tbody.innerHTML = '';
             msgDiv.textContent = '';
 
-            result.data.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${item.brand}</td>
-                                <td>${item.fno}</td>
-                                <td style="text-align:center; width:20px;">
-                                    <button class="icon-button" id="delete-button">
-                                        <img src="/static/icons/delete.png" 
-                                            class="small-icon" />
-                                        </button>
-                                </td>`;
+            result.data.forEach(item => addFlossRow(tbody, item))
 
-                tr.setAttribute('data-brand', `${item.brand}`)
-                tr.setAttribute('data-fno', `${item.fno}`)
-
-                // Attach event handler directly inside the loop
-                const btn = tr.querySelector('#delete-button');
-                btn.addEventListener('click', () => {
-                    deleteStock(tr);
-                });
-
-                tbody.appendChild(tr);
-            }); 
-        } else {
+            } else {
             alert(result.message || "Error!")
         }
     });
@@ -68,7 +78,7 @@ function deleteStock(tr) {
 };
 
 // Add stock
-document.getElementById('button_add').addEventListener('click', () => {
+document.getElementById('button-add').addEventListener('click', () => {
     // Retrieve input
     const floss = document.getElementById('floss').value;
     clearMessage()
@@ -84,27 +94,7 @@ document.getElementById('button_add').addEventListener('click', () => {
                 document.getElementById('floss').value = ''; // clear input
 
                 const tbody = document.getElementById('stock-table-body');
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${result.data.brand}</td>
-                                <td>${result.data.fno}</td>
-                                <td style="text-align:center; width:20px;">
-                                    <button class="icon-button" id="delete-button">
-                                    <img src="/static/icons/delete.png" 
-                                        class="small-icon" />
-                                        </button>
-                                </td>`;
-
-                tr.setAttribute('data-brand', `${result.data.brand}`)
-                tr.setAttribute('data-fno', `${result.data.fno}`)
-                tr.setAttribute('style', 'background-color:palegreen');
-
-                // Attach event handler directly inside the loop
-                const btn = tr.querySelector('#delete-button');
-                btn.addEventListener('click', () => {
-                    deleteStock(tr);
-                });
-
-                tbody.appendChild(tr);
+                const tr = addFlossRow(tbody, result.data, true)
 
                 // Insert new floss at top of table
                 if (tbody.firstChild) {

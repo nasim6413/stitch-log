@@ -7,7 +7,7 @@ s = Blueprint('stock', __name__, url_prefix='/stock')
 
 @s.route('/', methods=['GET'])
 def stock_page():
-    return render_template('stock_page.html')
+    return render_template('stock.html')
 
 @s.route('/list', methods=['GET'])
 def stock_list():

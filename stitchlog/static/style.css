@@ -309,3 +309,47 @@ tbody tr:hover {
   align-items: center; /* vertically aligns them */
   margin-bottom: 1rem; /* optional spacing below */
 }
+
+/* Modal Project Delete */
+/* Fullscreen dark overlay */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;  /* stays above everything */
+}
+
+.modal.hidden {
+  display: none;
+}
+
+/* Modal box matches container style */
+.modal-box {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  width: 400px;
+  max-width: 90%;
+  padding: 25px;
+  text-align: center;
+}
+
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+/* Modal-specific text sizes */
+.modal-box h3 {
+  font-size: 1.4em;   /* larger title */
+  margin-bottom: 10px;
+}
+
+.modal-box p {
+  font-size: 1em;     /* normal readable size */
+  line-height: 1.4;
+}

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>StitchLog</title>
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/static/icons/favicon.png">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 
@@ -33,35 +33,8 @@
         <hr></hr>
 
     {% block body %}
-    {% if not username %}
-        <div style="text-align: center; margin-top: 50px;">
-            <h1 style="font-size: 2.5em; margin-bottom: 10px;">Welcome!</h1>
-        </div>
 
-        <div>
-        <form method="POST">
-            <input type="text" name="username" placeholder="Set username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-            <button class="button" type="submit" name="button" value="username" id="button_convert">Set</button>
-        </form>
-
-    {% elif username %}
-
-    <div style="text-align: center; margin-top: 50px;">
-        <h1 style="font-size: 2.5em; margin-bottom: 10px;">Welcome back, {{ username }}!</h1>
-
-        <div id="progress-container">
-            <p style="font-size: 1.3em; margin: 10px 0;">
-                You have <strong>{{ floss_count }}</strong> floss in stock.
-            </p>
-            <p style="font-size: 1.3em; margin: 10px 0;">
-                You have <strong>{{ project_count }}</strong> ongoing projects.
-            </p>
-        </div>
-    </div>
-    {% endif %}
     {% endblock %}
-
-
 
     </div>
 </body>

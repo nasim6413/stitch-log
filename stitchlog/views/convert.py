@@ -6,7 +6,7 @@ c = Blueprint('convert', __name__, url_prefix='/convert')
 
 @c.route('/', methods=['GET'])
 def convert_page():
-    return render_template('convert_page.html')
+    return render_template('convert.html')
 
 @c.route('/<item>', methods=['GET'])
 def converted_input(item):

@@ -1,7 +1,7 @@
 import { showErrorMessage, clearMessage } from './utils.js';
 
 // Retrieve input & load table
-function convertFloss() {
+document.getElementById('button-convert').addEventListener('click', () => {
     clearMessage()
     const floss = document.getElementById('floss').value;
 
@@ -54,6 +54,4 @@ function convertFloss() {
                     }
                 });
             });
-        }
-
-document.getElementById('button_convert').addEventListener('click', () => convertFloss());
+        });

@@ -26,7 +26,7 @@ function loadProjects () {
 })};
 
 // Create new project
-document.getElementById('button_new').addEventListener('click', () => {
+document.getElementById('button-new').addEventListener('click', () => {
     fetch(create_project_url,
         { method: "POST" }
     )

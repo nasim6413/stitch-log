@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request
 from stitchlog.models import setup, projects, extractor, floss
-from datetime import datetime, date
 from ..models.search import search_project, search_project_floss
 from ..utils.responses import *
 
@@ -8,11 +7,11 @@ p = Blueprint('projects', __name__, url_prefix='/projects')
 
 @p.route('/')
 def projects_home():   
-    return render_template('projects_page.html')
+    return render_template('projects.html')
 
 @p.route('/<project_name>')
 def project_page(project_name):
-    return render_template('project_details.html', project_name=project_name)
+    return render_template('project/project.html', project_name=project_name)
 
 # Retrieving project lists/details
 @p.route('/list', methods=['GET'])
@@ -54,12 +53,10 @@ def project_creation():
 def project_delete(project_name):
     conn = setup.get_db()
     
-    # Checks that project exists
     if search_project(conn, project_name):
         result_project = projects.delete_project(conn, project_name)
         result_floss = projects.project_del_all_floss(conn, project_name)
         
-        # Successful project and floss deletions
         return success_response() if result_project and result_floss else error_response("Error when deleting project!")
             
     else:
