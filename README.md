@@ -62,6 +62,5 @@ crontab -e
 ## Credits
 
 - Background image: "Aesthetic Anime City at Dusk" by ruslan-abaev_97 from Wallpapers.com.
-- Icons: "Gamification" by Miguel C Balandrano, from Flaticon.
 - Fonts: 
     - "Mystery Quest" by Astigmatic, from Google Fonts.

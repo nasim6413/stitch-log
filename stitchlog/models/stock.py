@@ -1,4 +1,4 @@
-from ..utils import *
+from ..utils.utils import *
 
 def stock_list(conn):
     
@@ -38,11 +38,11 @@ def stock_count(conn):
 
 def stock_add(conn, brand, fno):
     
-    """Adds specified floss to stock table if not existing."""
+    """Adds specified floss to stock table."""
     
     cursor = conn.cursor()
-
-    if not search_stock(conn, brand, fno):
+    
+    try:
         cursor.execute("""
                         INSERT INTO stock (brand, fno)
                         VALUES (?, ?);
@@ -53,7 +53,8 @@ def stock_add(conn, brand, fno):
         cursor.close()
         return True
     
-    else:
+    except:
+        cursor.close()
         return False
     
 def stock_del(conn, brand, fno):
@@ -62,7 +63,7 @@ def stock_del(conn, brand, fno):
     
     cursor = conn.cursor()
 
-    if search_stock(conn, brand, fno):
+    try:
         cursor.execute("""
                         DELETE FROM stock
                         WHERE stock.brand = ? AND stock.fno = ?;
@@ -73,6 +74,6 @@ def stock_del(conn, brand, fno):
         cursor.close()
         return True   
     
-    else: 
+    except:
         cursor.close()
         return False  

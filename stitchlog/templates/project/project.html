@@ -1,0 +1,71 @@
+{% extends 'home.html' %}
+
+<title>PROJECT NAME</title>
+
+{% block body %}
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal hidden">
+  <div class="modal-box">
+        <h3>Delete Project</h3>
+        <p>Are you sure you want to delete project <b>{{ project_name }}</b>?</p>
+        <div class="modal-actions">
+            <button id="cancelDelete" class="icon-button">
+                <img src="/static/icons/back.png" class="small-icon"/></button>
+            <button id="confirmDelete" class="icon-button">
+                <img src="/static/icons/check.png" class="small-icon"/>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<div class="project-header">
+    <h2>PROJECT NAME</h2>
+
+    <div id="project-page-buttons">
+        <button class="icon-button" id="amendProject">
+            <img src="/static/icons/amend.png" class="small-icon"/>
+        </button>
+        <button class="icon-button" id="deleteProject">
+            <img src="/static/icons/delete.png" class="small-icon" />
+        </button>
+    </div>
+</div>
+<div>
+    <p>
+        PROJECT DETAILS
+    </p>
+
+    <div class="progress-container">
+        <div class="progress-bar" style="width:50%;"></div>
+        <span>50%</span>
+    </div>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+        <tr>
+            <th>Brand</th>
+            <th>Number</th>
+            <th>Available</th>
+        </tr>
+        </thead>
+        <tbody id="project-floss-body">
+        </tbody>
+    </table>
+</div>
+
+<script>
+const SCRIPT_ROOT = {{ request.script_root|tojson }};
+const PROJECT_NAME = {{ project_name|tojson }};
+
+const delete_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/delete`;
+const amend_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/amend`;
+const floss_list_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/floss/list`;
+</script>
+
+<script type="module" src="{{ url_for('static', filename='js/project/project.js') }}"></script>
+
+{% endblock %}

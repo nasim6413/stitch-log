@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>StitchLog</title>
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/static/icons/favicon.png">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 
@@ -12,19 +12,19 @@
         <hr></hr>
 
         <nav class="icon-nav">
-        <a href="/home" class="icon-button">
+        <a href="/home" class="home-icon-button">
             <img src="/static/icons/home.png" alt="Home" class="nav-icon">
             <span class="nav-label">Home</span>
         </a>
-        <a href="/projects" class="icon-button">
+        <a href="/projects" class="home-icon-button">
             <img src="/static/icons/projects.png" alt="Home" class="nav-icon">
             <span class="nav-label">Projects</span>
         </a>
-        <a href="/stock" class="icon-button">
+        <a href="/stock" class="home-icon-button">
             <img src="/static/icons/stock.png" alt="Stock" class="nav-icon">
             <span class="nav-label">Stock</span>
         </a>
-        <a href="/convert" class="icon-button">
+        <a href="/convert" class="home-icon-button">
             <img src="/static/icons/convert.png" alt="Convert" class="nav-icon">
             <span class="nav-label">Convert</span>
         </a>
@@ -33,35 +33,8 @@
         <hr></hr>
 
     {% block body %}
-    {% if not username %}
-        <div style="text-align: center; margin-top: 50px;">
-            <h1 style="font-size: 2.5em; margin-bottom: 10px;">Welcome!</h1>
-        </div>
 
-        <div>
-        <form method="POST">
-            <input type="text" name="username" placeholder="Set username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-            <button class="button" type="submit" name="button" value="username" id="button_convert">Set</button>
-        </form>
-
-    {% elif username %}
-
-    <div style="text-align: center; margin-top: 50px;">
-        <h1 style="font-size: 2.5em; margin-bottom: 10px;">Welcome back, {{ username }}!</h1>
-
-        <div id="progress-container">
-            <p style="font-size: 1.3em; margin: 10px 0;">
-                You have <strong>{{ floss_count }}</strong> floss in stock.
-            </p>
-            <p style="font-size: 1.3em; margin: 10px 0;">
-                You have <strong>{{ project_count }}</strong> ongoing projects.
-            </p>
-        </div>
-    </div>
-    {% endif %}
     {% endblock %}
-
-
 
     </div>
 </body>

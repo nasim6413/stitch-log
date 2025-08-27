@@ -1,46 +1,27 @@
 {% extends 'home.html' %}
 
-<title>Floss Conversion</title>
-
 {% block body %}
-    <div>
-        <form method="POST">
-            <input type="text" name="floss" placeholder="Enter floss" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-            <button class="button" type="submit" name="button" value="convert" id="button_convert">Convert</button>
-        </form>
-        {% if error %}
-            <p class="error-message">{{ error }}</p>
-        {% endif %}
+    <div class="input-wrapper">
+        <input type="text" id="floss" name="floss" placeholder="Enter floss" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <button class="button" type="button" name="button" value="convert" id="button-convert">Convert</button>
     </div>
 
+    <div id="error-message"></div>
+
     <div>
-        {% if rows %}
         <table>
-            <thead>
-                <tr>
-                    <th>{{brand}}</th>
-                    <th>{{converted_brand}}</th>
-                    <th>Hex</th>
-                    <th>Available</th>
-                </tr>
+            <thead id="conversion-table-header">
             </thead>
-            <tbody>
-                {% for row in rows %}
-                <tr>
-                    <td>{{ row[0] }}</td>
-                    <td>{{ row[1] }}</td>
-                    <td style="display: flex; align-items: center;">
-                    <span style="color: black; flex: 1;">{{ row[2] }}</span>
-                    <span style="width: 60px; height: 20px; background-color: #{{ row[2] }}; margin-left: 10px; border: 1px solid #ccc;"></span>
-                    </td>
-                    <td style="color: {{ 'green' if row[3] else 'red' }}">
-                        {{ 'available' if row[3] else 'not available' }}
-                    </td>
-                </tr>
-                {% endfor %}
+            <tbody id="conversion-table-body">
             </tbody>
         </table>
-        {% endif %}
     </div>
+
+<script>
+const SCRIPT_ROOT = {{ request.script_root|tojson }};
+const convert_url = `${SCRIPT_ROOT}/convert`;
+</script>
+
+<script type="module" src="{{ url_for('static', filename='js/convert.js') }}"></script>
 
 {% endblock %}
