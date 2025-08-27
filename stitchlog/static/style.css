@@ -217,25 +217,6 @@ tbody tr:hover {
   font-weight: bold;
 }
 
-.project-summary-card {
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.project-summary-card h2 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  font-size: 1.4em;
-}
-
-.project-summary-card p {
-  margin: 0 0 15px;
-  font-size: 0.95em;
-}
-
 .progress-container {
   position: relative;
   background-color: #ddd;
@@ -283,17 +264,7 @@ tbody tr:hover {
   background-color: mediumseagreen;
 }
 
-#button_delete{
-  background-color: tomato;
-}
-
-#new-project {
-    display: flex;
-    justify-content: flex-end; /* pushes button to the right */
-    margin-top: 10px;
-}
-
-.icon-button {
+.home-icon-button {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -302,16 +273,16 @@ tbody tr:hover {
   transition: opacity 0.3s ease;
 }
 
-.icon-button:hover {
+.home-icon-button:hover {
   opacity: 0.6;
 }
 
-.delete-icon {
+.small-icon {
   width: 20px; 
   height: 20px;
 }
 
-.delete-button {
+.icon-button {
   background: none; 
   border: none; 
   padding: 0; 
@@ -319,8 +290,22 @@ tbody tr:hover {
 }
 
 /* Divs */
-#project-header {
+#new-project {
+    display: flex;
+    justify-content: flex-end; /* pushes button to the right */
+    margin-top: 10px;
+}
+
+#project-page-buttons {
+  display: flex;
+  justify-content: flex-end; /* pushes children to the right */
+  gap: 10px; /* optional spacing between buttons */
+  margin-top: 1rem; /* optional spacing from above */
+}
+
+.project-header {
   display: flex; 
-  justify-content: flex-end; 
-  margin-top: 1rem;
+  justify-content: space-between; /* pushes title left and buttons right */
+  align-items: center; /* vertically aligns them */
+  margin-bottom: 1rem; /* optional spacing below */
 }

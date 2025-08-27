@@ -19,9 +19,9 @@ function loadStock() {
                 tr.innerHTML = `<td>${item.brand}</td>
                                 <td>${item.fno}</td>
                                 <td style="text-align:center; width:20px;">
-                                    <button class="delete-button">
-                                    <img src="/static/icons/delete.png" 
-                                        class="delete-icon" />
+                                    <button class="icon-button" id="delete-button">
+                                        <img src="/static/icons/delete.png" 
+                                            class="small-icon" />
                                         </button>
                                 </td>`;
 
@@ -29,7 +29,7 @@ function loadStock() {
                 tr.setAttribute('data-fno', `${item.fno}`)
 
                 // Attach event handler directly inside the loop
-                const btn = tr.querySelector('.delete-button');
+                const btn = tr.querySelector('#delete-button');
                 btn.addEventListener('click', () => {
                     deleteStock(tr);
                 });
@@ -88,9 +88,9 @@ document.getElementById('button_add').addEventListener('click', () => {
                 tr.innerHTML = `<td>${result.data.brand}</td>
                                 <td>${result.data.fno}</td>
                                 <td style="text-align:center; width:20px;">
-                                    <button class="delete-button">
+                                    <button class="icon-button" id="delete-button">
                                     <img src="/static/icons/delete.png" 
-                                        class="delete-icon" />
+                                        class="small-icon" />
                                         </button>
                                 </td>`;
 
@@ -99,7 +99,7 @@ document.getElementById('button_add').addEventListener('click', () => {
                 tr.setAttribute('style', 'background-color:palegreen');
 
                 // Attach event handler directly inside the loop
-                const btn = tr.querySelector('.delete-button');
+                const btn = tr.querySelector('#delete-button');
                 btn.addEventListener('click', () => {
                     deleteStock(tr);
                 });

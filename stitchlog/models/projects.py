@@ -1,3 +1,4 @@
+import datetime
 from ..utils.utils import natural_key
 
 # LIST PROJECTS
@@ -46,22 +47,43 @@ def list_project_details(conn, project_name):
         return False
 
 # PROJECT CREATION / UPDATING
-def create_project(conn, name, start_date, end_date = False, progress = 1):
+def create_project(conn):
     
     """Creates new cross-stitch project."""
-    
+
     cursor = conn.cursor()
+
+    # Returns most recent untitled project
+    cursor.execute("""
+                    SELECT project_name
+                    FROM project_details
+                    WHERE project_name LIKE 'Untitled-%'
+                    ORDER BY CAST(SUBSTR(project_name, 10) AS INTEGER) DESC
+                    LIMIT 1;
+                   """)
     
     try:
+        output = cursor.fetchone()
+        if not output:
+            project_name = 'Untitled-00'
+        
+        else:
+            project_num = output[0].split('-')[1]
+            project_name = f'Untitled-{int(project_num) + 1:02d}'
+
+        start_date = datetime.datetime.now()
+        end_date = None
+        progress = 0
+
         cursor.execute("""
                        INSERT INTO project_details (project_name, start_date, end_date, progress)
                        VALUES (?, ?,  ?, ?);
                        """,
-                       (name, start_date, end_date, progress))
+                       (project_name, start_date, end_date, progress))
         
         conn.commit()
         cursor.close()
-        return True  
+        return project_name
     
     except:
         cursor.close()
@@ -152,6 +174,7 @@ def list_project_floss(conn, project_name):
         return output
 
     except:
+        cursor.close()
         return False
 
 def project_add_floss(conn, name, brand, fno):
@@ -171,6 +194,7 @@ def project_add_floss(conn, name, brand, fno):
         return True
     
     except:
+        cursor.close()
         return False
 
 def project_delete_floss(conn, name, brand, fno):
@@ -191,6 +215,7 @@ def project_delete_floss(conn, name, brand, fno):
         return True
     
     except:
+        cursor.close()
         return False
 
 def project_del_all_floss(conn, name):
@@ -212,4 +237,5 @@ def project_del_all_floss(conn, name):
         return True
 
     except:
+        cursor.close()
         return False

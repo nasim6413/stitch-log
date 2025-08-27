@@ -1,19 +1,29 @@
 {% extends 'home.html' %}
 
-<title>{{ project_name }}</title>
+<title>PROJECT NAME</title>
 
 {% block body %}
 
-<div class="project-summary-card">
-    <h2>{{ data['project_name'] }}</h2>
+<div class="project-header">
+    <h2>PROJECT NAME</h2>
+
+    <div id="project-page-buttons">
+        <button class="icon-button">
+            <img src="/static/icons/amend.png" class="small-icon"/>
+        </button>
+        <button class="icon-button" id="button_delete_project">
+            <img src="/static/icons/delete.png" class="small-icon" />
+        </button>
+    </div>
+</div>
+<div>
     <p>
-        You started this project on <strong>{{ data['project_date'] }}</strong>  
-        and {{ 'worked' if data['project_prog'] == 100 else 'have been working' }} on it for <strong>{{ data['project_days'] }}</strong> day{{ 's' if data['project_days'] != 1 else '' }}.
+        PROJECT DETAILS
     </p>
 
     <div class="progress-container">
-        <div class="progress-bar" style="width: {{ data['project_prog'] }}%;"></div>
-        <span>{{ data['project_prog'] }}%</span>
+        <div class="progress-bar" style="width:50%;"></div>
+        <span>50%</span>
     </div>
 </div>
 
@@ -26,26 +36,23 @@
             <th>Available</th>
         </tr>
         </thead>
-        <tbody>
-        {% for f in project_floss %}
-            <tr>               
-            <td>{{ f[0] }}</td>
-            <td>{{ f[1] }}</td>
-            <td style="color: {{ 'green' if f[2] else 'red' }}">
-                {{ 'in stock' if f[2] else 'not in stock' }}
-            </td>
-            </tr>
-        {% endfor %}
+        <tbody id="project-floss-body">
         </tbody>
     </table>
 </div>
 
+<script>
+const SCRIPT_ROOT = {{ request.script_root|tojson }};
+const PROJECT_NAME = {{ project_name|tojson }};
 
-<div style="display: flex; justify-content: flex-end; gap: 10px;">
-    <form method="POST">
-        <button class="button" type="submit" name="button" value="amend-project">Update</button>
-        <button class="button" type="submit" name="button" value="delete-project" id="button_delete">Delete</button>
-    </form>
-</div>
+const delete_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/delete`;
+// const amend_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/amend`;
+const add_floss_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/floss/add`;
+const delete_floss_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/floss/delete`;
+const extract_floss_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/floss/extract`;
+const floss_list_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/floss/list`;
+</script>
+
+<script type="module" src="{{ url_for('static', filename='js/project_page.js') }}"></script>
 
 {% endblock %}

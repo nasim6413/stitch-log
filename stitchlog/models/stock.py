@@ -54,6 +54,7 @@ def stock_add(conn, brand, fno):
         return True
     
     except:
+        cursor.close()
         return False
     
 def stock_del(conn, brand, fno):
