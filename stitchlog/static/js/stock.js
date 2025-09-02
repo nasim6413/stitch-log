@@ -16,7 +16,7 @@ function addFlossRow(tbody, item, green = false) {
     tr.setAttribute('data-fno', `${item.fno}`)
 
     // Newly added rows
-    if (green === true) {
+    if (green) {
     tr.setAttribute('style', 'background-color:palegreen');
     }
 
@@ -47,9 +47,9 @@ function loadStock() {
             result.data.forEach(item => addFlossRow(tbody, item))
 
             } else {
-            alert(result.message || "Error!")
-        }
-    });
+                alert(result.message || "Error!")
+            }
+        });
 };
 
 // Delete stock    
@@ -86,7 +86,7 @@ document.getElementById('button-add').addEventListener('click', () => {
     fetch(add_url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ floss: floss })
+        body: JSON.stringify({ floss })
         })
         .then(response => response.json())
         .then(result => {

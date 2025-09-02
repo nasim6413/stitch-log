@@ -31,7 +31,9 @@ body {
   background-color: rgba(255, 255, 255);
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  height: 750px;
+  min-height: 80vh;   /* scales with screen size */
+  max-height: 80vh;   /* prevents overflow */
+  height: auto;       /* lets content define natural height */
   overflow: hidden;
   display: flex;
   flex-direction: column;

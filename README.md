@@ -5,11 +5,13 @@ A web-based tool for managing cross-stitch and embroidery projects, track embroi
 
 📦 **Track Floss Inventory** – View and manage your current stock of embroidery floss.
 
-🧵 **Project Management** – Create and track cross-stitch or embroidery projects, including required colors and progress.
+🔄 **Convert Between Brands** – Convert between different floss brands (e.g., DMC ↔ Anchor).
+
+🧵 **Project Management** – Create and track cross-stitch or embroidery projects, including required colors and progress. (Currently reworking)
 
 📄 **Pattern PDF Upload** – Upload a pattern in PDF format and extract the list of required floss colors.
 
-🔄 **Convert Between Brands** – Convert between different floss brands (e.g., DMC ↔ Anchor).
+![Alt Text](screenshots/stock.gif)
 
 ## Getting Started
 ### Requirements

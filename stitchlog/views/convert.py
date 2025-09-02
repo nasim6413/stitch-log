@@ -16,8 +16,8 @@ def converted_input(item):
     if brand or fno:
         return success_response(
             {
-            "brand": brand,
-            "fno": fno
+                "brand": brand,
+                "fno": fno
             }
         )
                 
