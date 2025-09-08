@@ -10,36 +10,39 @@ def convert_page():
 
 @c.route('/<item>', methods=['GET'])
 def converted_input(item):
+    """Validates and fixes floss input."""
     item = item.strip()
     brand, fno = floss.fix_floss_input(item)
     
-    if brand or fno:
-        return success_response(
-            {
-                "brand": brand,
-                "fno": fno
-            }
-        )
-                
-    else:
+    if not (brand and fno):
         return error_response("Invalid input!")
+    
+    fixed_input = {
+        "brand": brand,
+        "fno" : fno
+    }
+    return success_response(fixed_input)
     
 @c.route('/<brand>-<fno>', methods=['GET'])
 def converted_page(brand, fno):
+    """Converts floss input from one brand to another."""
     conn = setup.get_db()
     converted_brand, rows = floss.gen_convert(conn, brand, fno)
 
-    if rows:
-        return success_response([
+    if not rows:
+        return error_response("Conversion does not exist!")
+    
+    else:
+        result = [
             {
                 "brand" : brand,
-                "brand_fno": r[0],
+                "brand_fno": row[0],
                 "converted_brand" : converted_brand,
-                "converted_fno": r[1],
-                "hex": r[2],
-                "availability": r[3]
-            } for r in rows
-        ])
-        
-    else:
-        return error_response("Conversion does not exist!")
+                "converted_fno": row[1],
+                "hex": row[2],
+                "availability": row[3]
+            } 
+            for row in rows
+        ]
+        return success_response(result)
+    

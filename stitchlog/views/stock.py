@@ -9,50 +9,61 @@ s = Blueprint('stock', __name__, url_prefix='/stock')
 def stock_page():
     return render_template('stock.html')
 
-@s.route('/list', methods=['GET'])
+@s.route("/list", methods=["GET"])
 def stock_list():
+    """Retrieve and return the full stock list of floss items."""
     conn = setup.get_db()
     rows = stock.stock_list(conn)
-    return success_response([
-        {
-            "brand": r[0], 
-            "fno": r[1]
-            } for r in rows
-        ]) if rows else error_response("Error in retrieving stock data.")
 
-@s.route('/add', methods=['POST'])
+    if not rows:
+        return error_response("Error retrieving stock data.")
+
+    stock_items = [
+        {
+            "brand": row[0],
+            "fno": row[1],
+        }
+        for row in rows
+    ]
+    return success_response(stock_items)
+
+@s.route("/add", methods=["POST"])
 def stock_add_item():
+    """Add a floss item to stock."""
     conn = setup.get_db()
     data = request.get_json()
-    item = data.get('floss', '').strip()
+    item = data.get("floss", "").strip()
 
     brand, fno = floss.fix_floss_input(item)
-    
-    if brand and fno:
-        if not search_stock(conn, brand, fno):
-            result = stock.stock_add(conn, brand, fno)
 
-            return success_response(
-                {
-                    "brand" : brand,
-                    "fno" : fno
-                    }
-                ) if result else error_response("Error when adding floss.")
-            
-        else:
-            return error_response("Floss already in stock!")
-    
-    return error_response("Invalid input!")
+    if not (brand and fno):
+        return error_response("Invalid input!")
 
-@s.route('/delete', methods=['POST'])
+    if search_stock(conn, brand, fno):
+        return error_response("Floss already in stock!")
+
+    result = stock.stock_add(conn, brand, fno)
+    if not result:
+        return error_response("Error adding floss.")
+
+    return success_response({"brand": brand, "fno": fno})
+
+@s.route("/delete", methods=["POST"])
 def stock_delete_item():
+    """Delete a floss item from stock."""
     conn = setup.get_db()
     data = request.get_json()
-    
-    if search_stock(conn, data['brand'], data['fno']):
-        result = stock.stock_del(conn, data['brand'], data['fno'])
 
-        return success_response() if result else error_response("Error in deleting floss.")
-        
-    else:
-        return error_response("Floss was not in stock!")
+    brand, fno = data['brand'], data['fno']
+
+    if not (brand and fno):
+        return error_response("Invalid input!")
+
+    if not search_stock(conn, brand, fno):
+        return error_response("Floss not in stock!")
+
+    result = stock.stock_del(conn, brand, fno)
+    if not result:
+        return error_response("Error deleting floss.")
+
+    return success_response()

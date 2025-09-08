@@ -1,9 +1,7 @@
 from ..utils.utils import *
     
 def fix_floss_input(item):
-    
     """Validates and fixes floss input."""
-    
     match = re.match(FLOSS_PATTERN, item, re.IGNORECASE)
 
     if match:
@@ -32,9 +30,7 @@ def fix_floss_input(item):
         return False, False
     
 def gen_convert(conn, brand, fno):
-    
     """Returns all possible conversions for a specified floss and whether available."""
-    
     cursor = conn.cursor()
 
     if brand == BRANDS[0]:
@@ -69,9 +65,7 @@ def gen_convert(conn, brand, fno):
         return False
     
 def stock_convert(conn, brand, fno):
-    
     """Returns possible conversions for a specified floss if available from stock."""
-    
     cursor = conn.cursor()
 
     if brand == BRANDS[0]:

@@ -11,10 +11,10 @@ A web-based tool for managing cross-stitch and embroidery projects, track embroi
 
 📄 **Pattern PDF Upload** – Upload a pattern in PDF format and extract the list of required floss colors.
 
-![Alt Text](screenshots/stock.gif)
+![Alt Text](https://i.imgur.com/hluPyym.gif)
 
 ## Getting Started
-### Requirements
+### Requiremegithub readms
 - Raspberry Pi
 - Docker
 

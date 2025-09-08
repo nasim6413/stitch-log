@@ -6,18 +6,4 @@ h = Blueprint('home', __name__)
 @h.route('/', methods=['GET', 'POST'])
 @h.route('/home', methods=['GET', 'POST'])
 def home_page():
-    # conn = setup.get_db()
-    # username = setup.get_username()
-
-    # if not username and request.method == 'POST':
-    #     username = request.form['username']
-        
-    #     setup.set_username(current_app, username) # Username setup if not existing
-
-        # return redirect(url_for('home.home_page'))
-        
-    # floss_count = len(stock.stock_list(conn))
-    # projects_total = projects.list_project_details(conn)
-    # projects_ongoing = len([p for p in projects_total if p[1] < 100]) # Only count projects that are still in progress
-
     return render_template('home.html')
