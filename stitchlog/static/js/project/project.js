@@ -24,6 +24,10 @@ document.getElementById('confirmDelete').addEventListener('click', () => {
         });
 });
 
+document.getElementById('amendProject').addEventListener('click', () => {
+    window.location.href = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/amend`;
+});
+
 // Load stock list
 function loadStock() {
     fetch(floss_list_url)

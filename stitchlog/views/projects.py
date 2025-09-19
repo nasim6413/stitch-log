@@ -13,7 +13,11 @@ def projects_home():
 def project_page(project_name):
     return render_template('project/project.html', project_name=project_name)
 
-@p.route("/list", methods=["GET"])
+@p.route('/<project_name>/amend')
+def amend_project(project_name):
+    return render_template('project/amend.html', project_name=project_name)
+
+@p.route('/list', methods=['GET'])
 def projects_list():
     """Retrieve and return a list of all projects with progress details."""
     conn = setup.get_db()
@@ -31,7 +35,7 @@ def projects_list():
     ]
     return success_response(project_list)
 
-@p.route("/<project_name>/details", methods=["GET"])
+@p.route('/<project_name>/details', methods=['GET'])
 def project_page_details(project_name):
     """Retrieve specific project details by name."""
     conn = setup.get_db()
@@ -45,7 +49,7 @@ def project_page_details(project_name):
 
     return success_response(details)
 
-@p.route("/create", methods=["GET", "POST"])
+@p.route('/create', methods=['GET', 'POST'])
 def project_creation():
     """Create a new project and return its name."""
     conn = setup.get_db()
@@ -57,8 +61,16 @@ def project_creation():
     return success_response({"project_name": result})
  
 # TODO:Project amend details
+@p.route('/<project_name>/amend/save', methods=['GET', 'POST'])
+def save_changes_project(project_name):
+    """Save all changes to project details."""
+    conn = setup.get_db()
+    data = request.get_json()
     
-@p.route("/<project_name>/delete", methods=["POST"])
+    return success_response()
+
+
+@p.route('/<project_name>/delete', methods=['POST'])
 def project_delete(project_name):
     """Delete a project and all associated floss."""
     conn = setup.get_db()
@@ -74,7 +86,7 @@ def project_delete(project_name):
 
     return success_response()
         
-@p.route("/<project_name>/floss/list", methods=["GET"])
+@p.route('/<project_name>/floss/list', methods=['GET'])
 def project_page_floss(project_name):
     """List all floss associated with a project."""
     conn = setup.get_db()
@@ -96,7 +108,7 @@ def project_page_floss(project_name):
     ]
     return success_response(floss_list)
     
-@p.route("/<project_name>/floss/add", methods=["POST"])
+@p.route('/<project_name>/floss/add', methods=['POST'])
 def project_add_floss(project_name):
     """Add a floss item to a project."""
     conn = setup.get_db()
@@ -114,7 +126,7 @@ def project_add_floss(project_name):
 
     return success_response()
 
-@p.route("/<project_name>/floss/delete", methods=["POST"])
+@p.route('/<project_name>/floss/delete', methods=['POST'])
 def project_del_floss(project_name):
     """Delete a floss item from a project."""
     conn = setup.get_db()
@@ -132,7 +144,7 @@ def project_del_floss(project_name):
 
     return success_response()
     
-@p.route("/<project_name>/floss/extract", methods=["GET", "POST"])
+@p.route('/<project_name>/floss/extract', methods=['GET', 'POST'])
 def project_floss_extractor(project_name):
     """Extract floss list from an uploaded PDF."""
     if "file" not in request.files:

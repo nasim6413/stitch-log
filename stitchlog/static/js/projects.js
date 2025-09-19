@@ -33,7 +33,7 @@ document.getElementById('button-new').addEventListener('click', () => {
     .then(response => response.json())
     .then(result => {
         if (result.status === "ok") {
-            window.location.href = `${SCRIPT_ROOT}/projects/${result.data.project_name}`;
+            window.location.href = `${SCRIPT_ROOT}/projects/${result.data.project_name}/amend`;
         } else {
             alert(result.message || "Error!" )
         }

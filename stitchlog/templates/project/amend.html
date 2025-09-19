@@ -1,0 +1,53 @@
+{% extends 'home.html' %}
+
+<title>PROJECT NAME</title>
+
+{% block body %}
+<div class="project-header">
+    <div class="input-wrapper">
+        <input type="text" id="floss" name="floss" placeholder="Project name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+
+    <div id="project-page-buttons">
+        <button class="icon-button" id="saveChanges">
+            <img src="/static/icons/check.png" class="small-icon"/>
+        </button>
+        <button class="icon-button" id="cancelChanges">
+            <img src="/static/icons/back.png" class="small-icon" />
+        </button>
+    </div>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+        <tr>
+            <th>Floss</th>
+            <th style="width:25px;"></th>
+        </tr>
+        </thead>
+        <tbody id="project-floss-amend-body">
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <button class="icon-button" id="amendAddStock">
+        <img src="/static/icons/add.png" class="small-icon" />
+    </button>
+    <input type="file" id="patternFile" name="file" accept="application/pdf">
+    <button class="button" id="uploadPattern" type="button">Upload</button>
+</div>
+
+
+<script>
+const SCRIPT_ROOT = {{ request.script_root|tojson }};
+const PROJECT_NAME = {{ project_name|tojson }};
+
+const extract_floss_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/floss/extract`
+const cancel_changes_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}`
+</script>
+
+<script type="module" src="{{ url_for('static', filename='js/project/amend.js') }}"></script>
+
+{% endblock %}
