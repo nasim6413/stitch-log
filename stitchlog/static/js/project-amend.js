@@ -19,7 +19,7 @@ function addNewRow(item = false) {
     }
 
     // Deletes row
-    tr.querySelector('.deleteRow').addEventListener('click', () => {
+    tr.querySelector('#deleteRow').addEventListener('click', () => {
         tr.remove();
     });
 
@@ -66,12 +66,12 @@ document.getElementById('cancelChanges').addEventListener('click', () => {
 // Save changes
 document.getElementById('saveChanges').addEventListener('click', () => {
     const newProjectName = document.getElementById('projectName').value;
-    const flossInputs = document.querySelectorAll('.flossRow');
+    // const flossInputs = document.querySelectorAll('.flossRow');
 
-    const flossArray = [];
-    inputs.forEach(input => {
-        flossArray.push(input.value);
-    });
+    // const flossArray = [];
+    // inputs.forEach(input => {
+    //     flossArray.push(input.value);
+    // });
 
     fetch(save_changes_url, {
         method: "POST",
@@ -79,7 +79,7 @@ document.getElementById('saveChanges').addEventListener('click', () => {
         body: JSON.stringify({ 
             prev_name: PROJECT_NAME,
             new_name: newProjectName,
-            floss: flossArray
+            // floss: flossArray
         })
     })
     .then(response => response.json())
