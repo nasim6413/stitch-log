@@ -15,12 +15,7 @@ function loadProjects () {
             tr.innerHTML = `<td><a href="${SCRIPT_ROOT}/projects/${item.project_name}" id="project-page">
                                 ${item.project_name}
                             </td>
-                            <td>
-                            <div class="progress-cell">
-                            <div class="progress-bar" style="width: ${item.project_progress}">
-                                ${item.project_progress}%
-                            </div>
-                            </div></td>`;
+                            <td></td>`;
             tbody.appendChild(tr);
     })
 })};

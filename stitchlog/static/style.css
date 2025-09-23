@@ -6,7 +6,6 @@
 }
 
 /* Main body container */
-
 body {
   display: flex;  
   justify-content: center;
@@ -44,8 +43,8 @@ h1 {
   font-family: "Mystery", sans-serif;
   font-size:3vw;
   text-align: center;
-  margin-bottom: 15px;
-  margin-top: 5px;
+  margin-bottom: 8px;
+  margin-top: 1px;
 }
 
 h3 {
@@ -62,6 +61,11 @@ hr {
 
 p {
   font-size: 10px;
+}
+
+.modal-box h3 {
+  font-size: 1.4em;   /* larger title */
+  margin-bottom: 10px;
 }
 
 #error-message {
@@ -83,19 +87,19 @@ p {
 .icon-nav {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 15px;
   margin-bottom: 10px;
 }
 
 .nav-icon {
-  width: 40px;
+  width: 35px;
   height: auto;
   margin-bottom: 5px;
 }
 
 .nav-label {
-  font-size: 14px;
-  margin-top: 3px;
+  font-size: 12px;
+  margin-top: 2px;
 }
 
 /* Form / Input */
@@ -127,26 +131,62 @@ input[type="text"] {
   box-sizing: border-box;
 }
 
-input[type="date"] {
-  width: 100%;
-  max-width: 300px;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
 .form-field {
   margin-bottom: 1rem;
 }
 
-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 0.25rem;
+/* Buttons */
+.button {
+  border: 1px solid transparent;
+  color: white;
+  background-color: cornflowerblue;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 5px;
+  font-size: 15px;
+  margin: 5px;
+  cursor: pointer;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.button:hover{
+  opacity: 0.6;
+}
+
+#button_add {
+  background-color: mediumseagreen;
+}
+
+.home-icon-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  transition: opacity 0.3s ease;
+}
+
+.home-icon-button:hover {
+  opacity: 0.6;
+}
+
+.small-icon {
+  width: 20px; 
+  height: 20px;
+}
+
+.icon-button {
+  background: none; 
+  border: none; 
+  padding: 0; 
+  cursor:pointer;
 }
 
 /* Table */
-
 table {
   width: 100%;
   border-collapse: collapse;
@@ -183,7 +223,27 @@ tbody tr:hover {
   background-color: #eed4d9c5;
 }
 
-/* Project pages */
+/* Divs */
+#new-project {
+    display: flex;
+    justify-content: flex-end; /* pushes button to the right */
+    margin-top: 10px;
+}
+
+#project-page-buttons {
+  display: flex;
+  justify-content: flex-end; /* pushes children to the right */
+  gap: 10px; /* optional spacing between buttons */
+  margin-top: 1rem; /* optional spacing from above */
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem; /* reduce spacing */
+}
+
 #project-page {
   color: inherit;
   text-decoration: none;
@@ -238,81 +298,7 @@ tbody tr:hover {
   font-size: 0.85em;  /* smaller label */
 }
 
-/* Buttons */
-
-.button {
-  border: 1px solid transparent;
-  color: white;
-  background-color: cornflowerblue;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  border-radius: 5px;
-  font-size: 15px;
-  margin: 5px;
-  cursor: pointer;
-  height: 30px;
-  line-height: 30px;
-  padding: 0 10px;
-  box-sizing: border-box;
-}
-
-.button:hover{
-  opacity: 0.6;
-}
-
-#button_add {
-  background-color: mediumseagreen;
-}
-
-.home-icon-button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  color: #333;
-  transition: opacity 0.3s ease;
-}
-
-.home-icon-button:hover {
-  opacity: 0.6;
-}
-
-.small-icon {
-  width: 20px; 
-  height: 20px;
-}
-
-.icon-button {
-  background: none; 
-  border: none; 
-  padding: 0; 
-  cursor:pointer;
-}
-
-/* Divs */
-#new-project {
-    display: flex;
-    justify-content: flex-end; /* pushes button to the right */
-    margin-top: 10px;
-}
-
-#project-page-buttons {
-  display: flex;
-  justify-content: flex-end; /* pushes children to the right */
-  gap: 10px; /* optional spacing between buttons */
-  margin-top: 1rem; /* optional spacing from above */
-}
-
-.project-header {
-  display: flex; 
-  justify-content: space-between; /* pushes title left and buttons right */
-  align-items: center; /* vertically aligns them */
-  margin-bottom: 1rem; /* optional spacing below */
-}
-
 /* Modal Project Delete */
-/* Fullscreen dark overlay */
 .modal {
   position: fixed;
   inset: 0;
@@ -327,7 +313,6 @@ tbody tr:hover {
   display: none;
 }
 
-/* Modal box matches container style */
 .modal-box {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
@@ -344,13 +329,60 @@ tbody tr:hover {
   justify-content: space-around;
 }
 
-/* Modal-specific text sizes */
-.modal-box h3 {
-  font-size: 1.4em;   /* larger title */
-  margin-bottom: 10px;
-}
-
 .modal-box p {
   font-size: 1em;     /* normal readable size */
   line-height: 1.4;
+}
+
+#projectName {
+  width: 100%;        /* fill available space in the row */
+  max-width: 600px;   /* optional max width */
+  border-radius: 5px; /* keep same curved edges */
+  padding: 6px 10px;
+  height: 36px;       /* slightly taller for consistency */
+  box-sizing: border-box;
+  font-size: 15px;
+}
+
+/* Grid-style rows */
+.form-row {
+  display: flex;
+  gap: 10px;   /* horizontal gap */
+  margin-bottom: 0; /* remove extra vertical margin */
+}
+
+/* Normal field */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 150px;
+  margin-bottom: 0; /* remove vertical spacing inside the row */
+}
+
+/* Upload field */
+.upload-wrapper input[type="file"] {
+  width: 100%;
+  max-width: 300px;   /* optional */
+  height: 30px;
+  padding: 5px 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+/* Inputs */
+input[type="date"] {
+  margin: 0;       /* remove default browser margin */
+  height: 30px;             /* match project name input */
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;       /* same curved edges */
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 2px;
 }

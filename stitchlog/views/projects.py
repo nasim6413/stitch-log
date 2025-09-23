@@ -7,15 +7,15 @@ p = Blueprint('projects', __name__, url_prefix='/projects')
 
 @p.route('/')
 def projects_home():   
-    return render_template('projects.html')
+    return render_template('project-list.html')
 
 @p.route('/<project_name>')
 def project_page(project_name):
-    return render_template('project/project.html', project_name=project_name)
+    return render_template('project-page.html', project_name=project_name)
 
 @p.route('/<project_name>/amend')
 def amend_project(project_name):
-    return render_template('project/amend.html', project_name=project_name)
+    return render_template('project-amend.html', project_name=project_name)
 
 @p.route('/list', methods=['GET'])
 def projects_list():
@@ -28,8 +28,7 @@ def projects_list():
 
     project_list = [
         {
-            "project_name": row[0],
-            "project_progress": row[1],
+            "project_name": row[0]
         }
         for row in rows
     ]
@@ -60,15 +59,24 @@ def project_creation():
 
     return success_response({"project_name": result})
  
-# TODO:Project amend details
+# TODO:Project amend details: start date, end date
 @p.route('/<project_name>/amend/save', methods=['GET', 'POST'])
 def save_changes_project(project_name):
     """Save all changes to project details."""
     conn = setup.get_db()
     data = request.get_json()
     
+    # Updates project name
+    prev_name = data.get("prev_name", "").strip()
+    new_name = data.get("new_name", "").strip()
+    project_id = search_project(conn, prev_name)
+    
+    project_name_result = projects.update_project_name(conn, project_id, new_name)
+    
+    if not project_name_result:
+        return error_response()
+    
     return success_response()
-
 
 @p.route('/<project_name>/delete', methods=['POST'])
 def project_delete(project_name):

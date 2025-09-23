@@ -46,8 +46,6 @@ function loadStock() {
 
             result.data.forEach(item => addFlossRow(tbody, item))
 
-            } else {
-                alert(result.message || "Error!")
             }
         });
 };

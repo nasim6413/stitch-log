@@ -10,9 +10,8 @@ def list_all_projects(conn):
     
     try:
         cursor.execute("""
-                SELECT project_name, progress
-                FROM project_details
-                ORDER BY progress;
+                SELECT project_name
+                FROM project_details;
                 """)
         
         output = cursor.fetchall()
@@ -73,13 +72,12 @@ def create_project(conn):
 
         start_date = datetime.datetime.now()
         end_date = None
-        progress = 0
 
         cursor.execute("""
-                       INSERT INTO project_details (project_name, start_date, end_date, progress)
-                       VALUES (?, ?,  ?, ?);
+                       INSERT INTO project_details (project_name, start_date, end_date)
+                       VALUES (?, ?, ?);
                        """,
-                       (project_name, start_date, end_date, progress))
+                       (project_name, start_date, end_date))
         
         conn.commit()
         cursor.close()
@@ -110,6 +108,29 @@ def delete_project(conn, name):
     except:
         cursor.close()
         return False 
+
+# PROJECT UPDATES
+def update_project_name(conn, project_id, new_name):
+    
+    """Updates project name."""
+    
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+                       UPDATE project_details
+                       SET project_name = ?
+                       WHERE id = ?;
+                       """,
+                       (new_name, project_id,))
+        
+        conn.commit()
+        cursor.close()
+        return True
+    
+    except:
+        cursor.close()
+        return False
     
 # def update_project(conn, name, end_date):
     

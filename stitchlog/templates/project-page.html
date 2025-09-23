@@ -1,7 +1,5 @@
 {% extends 'home.html' %}
 
-<title>PROJECT NAME</title>
-
 {% block body %}
 
 <!-- Delete Confirmation Modal -->
@@ -21,7 +19,7 @@
 
 
 <div class="project-header">
-    <h2>PROJECT NAME</h2>
+    <h2 id="projectName">PROJECT NAME</h2>
 
     <div id="project-page-buttons">
         <button class="icon-button" id="amendProject">
@@ -66,6 +64,6 @@ const amend_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/amend`;
 const floss_list_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/floss/list`;
 </script>
 
-<script type="module" src="{{ url_for('static', filename='js/project/project.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/project-page.js') }}"></script>
 
 {% endblock %}

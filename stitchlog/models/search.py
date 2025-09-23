@@ -22,20 +22,21 @@ def search_stock(conn, brand, fno):
 
 def search_project(conn, name):
     
-    """Checks whether project exists."""
+    """Checks whether project exists and returns project id."""
     
     cursor = conn.cursor()
     cursor.execute("""
-                   SELECT * FROM project_details
+                   SELECT id 
+                   FROM project_details
                    WHERE project_name = ?;
                    """,
                    (name,))
     
-    output = cursor.fetchall()
+    output = cursor.fetchone()
     cursor.close()
     
     if len(output) > 0:
-        return True
+        return output[0]
     
     else:
         return False

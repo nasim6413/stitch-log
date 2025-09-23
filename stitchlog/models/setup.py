@@ -43,10 +43,10 @@ def set_up(conn):
     # Projects table
     cursor.execute("""
         CREATE TABLE project_details (
-            project_name TEXT NOT NULL PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_name TEXT NOT NULL,
             start_date TIMESTAMP NOT NULL,
-            end_date TIMESTAMP,
-            progress NOT NULL
+            end_date TIMESTAMP
         );
     """)
     

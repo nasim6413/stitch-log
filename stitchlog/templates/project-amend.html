@@ -1,0 +1,71 @@
+{% extends 'home.html' %}
+
+<title>PROJECT NAME</title>
+
+{% block body %}
+<div class="project-header">
+    <div class="form-row">
+        <div class="form-field">
+            <label for="projectName">Project Name</label>
+            <input type="text" id="projectName" name="projectName" placeholder="Project name">
+        </div>
+    </div>
+
+    <div id="project-page-buttons">
+        <button class="icon-button" id="saveChanges">
+            <img src="/static/icons/check.png" class="small-icon"/>
+        </button>
+        <button class="icon-button" id="cancelChanges">
+            <img src="/static/icons/back.png" class="small-icon" />
+        </button>
+    </div>
+</div>
+
+<div class="form-row">
+  <div class="form-field">
+    <label for="startDate">Start Date</label>
+    <input type="date" id="startDate">
+  </div>
+
+  <div class="form-field">
+    <label for="endDate">End Date</label>
+    <input type="date" id="endDate">
+  </div>
+
+  <div class="form-field upload-field">
+    <label for="uploadPattern">Upload Pattern (PDF)</label>
+    <div class="upload-wrapper">
+      <input type="file" id="uploadPattern" name="file" accept="application/pdf">
+    </div>
+  </div>
+</div>
+
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Floss</th>
+                <th style="width:25px;">
+                    <button class="icon-button" id="amendAddStock">
+                        <img src="/static/icons/add.png" class="small-icon" />
+                    </button>
+                </th>
+            </tr>
+        </thead>
+        <tbody id="project-floss-amend-body">
+        </tbody>
+    </table>
+</div>
+
+<script>
+const SCRIPT_ROOT = {{ request.script_root|tojson }};
+const PROJECT_NAME = {{ project_name|tojson }};
+
+const extract_floss_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/floss/extract`
+const return_page_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}`
+const save_changes_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/amend/save`
+</script>
+
+<script type="module" src="{{ url_for('static', filename='js/project-amend.js') }}"></script>
+
+{% endblock %}

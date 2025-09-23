@@ -54,3 +54,4 @@ function loadStock() {
 
 // Loads stock on page render
 window.onload = loadStock;
+window.onload = document.getElementById("projectName").textContent = PROJECT_NAME;
