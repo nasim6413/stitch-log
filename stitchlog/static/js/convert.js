@@ -43,7 +43,7 @@ document.getElementById('button-convert').addEventListener('click', () => {
                     tr.innerHTML = `<td>${item.brand_fno}</td>
                                     <td>${item.converted_fno}</td>
                                     <td style="display: flex; align-items: center;">
-                                        <span style="color: black; flex: 1;">#${item.hex}</span>
+                                        <span style="color: black; flex: 1;">${item.colour}</span>
                                         <span style="width: 60px; height: 20px; margin-left: 10px; border: 1px solid #ccc; background-color: #${item.hex}"></span>
                                     </td>
                                     <td style="color: ${item.availability ? 'green' : 'red'}">${item.availability ? 'available' : 'not available'}</td>`;

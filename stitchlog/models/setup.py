@@ -12,73 +12,57 @@ def set_up(conn):
          
     # Conversion tables
     cursor.execute("""
-        CREATE TABLE dmc_to_anchor (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        CREATE TABLE conversions (
+        conversion_id INTEGER PRIMARY KEY AUTOINCREMENT,
         dmc TEXT NOT NULL,
         anchor TEXT NOT NULL,
-        hex TEXT,
-        colour TEXT
+        hex TEXT NOT NULL,
+        colour TEXT NOT NULL
         );
-    """)
-    
-    cursor.execute("""
-        CREATE TABLE anchor_to_dmc (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        anchor TEXT NOT NULL,
-        dmc TEXT NOT NULL,
-        hex TEXT,
-        colour TEXT
-        );
-    """)
+        """)
     
     # Stock table
     cursor.execute("""
         CREATE TABLE stock (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            stock_id INTEGER PRIMARY KEY AUTOINCREMENT,
             brand TEXT NOT NULL,
-            fno TEXT NOT NULL
+            f_no TEXT NOT NULL
         );
-    """)
+        """)
     
     # Projects table
     cursor.execute("""
-        CREATE TABLE project_details (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            project_name TEXT NOT NULL,
+        CREATE TABLE projects (
+            project_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT UNIQUE,
             start_date TIMESTAMP NOT NULL,
             end_date TIMESTAMP
         );
-    """)
+        """)
     
     # Project floss table
     cursor.execute("""
         CREATE TABLE project_floss (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            project_name TEXT NOT NULL,
+            floss_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER NOT NULL,
             brand TEXT NOT NULL,
-            fno TEXT NOT NULL
+            f_no TEXT NOT NULL
         );
-    """)
+        """)
     
-    # Read and insert dmc_to_anchor data
-    with open('stitchlog/data/dmc_to_anchor.csv', newline='', encoding='utf-8') as f:
+    # Read and insert conversion data
+    with open('stitchlog/data/conversions.csv', newline='', encoding='utf-8') as f:
         reader = csv.reader(f)
+        next(reader) # skip first row
+        
         for row in reader:
-            if row[1] != 'NA':  # anchor value
-                cursor.execute(
-                    'INSERT INTO dmc_to_anchor (dmc, anchor, hex, colour) VALUES (?, ?, ?, ?)',
-                    (row[0], row[1], row[2], row[3])
-                )
-
-    # Read and insert anchor_to_dmc data
-    with open('stitchlog/data/anchor_to_dmc.csv', newline='', encoding='utf-8') as f:
-        reader = csv.reader(f)
-        for row in reader:
-            if row[1] != 'NA':  # dmc value
-                cursor.execute(
-                    'INSERT INTO anchor_to_dmc (anchor, dmc, hex, colour) VALUES (?, ?, ?, ?)',
-                    (row[0], row[1], row[2], row[3])
-                )
+            cursor.execute(
+                """
+                INSERT INTO conversions (dmc, anchor, hex, colour) 
+                VALUES (?, ?, ?, ?)
+                """,
+                (row[0], row[1], row[2], row[3])
+            )
     
     return
 

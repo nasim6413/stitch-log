@@ -6,7 +6,7 @@ def stock_list(conn):
     
     cursor = conn.cursor()
     cursor.execute("""
-                    SELECT brand, fno
+                    SELECT brand, f_no
                     FROM stock
                     ORDER BY brand;
                     """)
@@ -44,7 +44,7 @@ def stock_add(conn, brand, fno):
     
     try:
         cursor.execute("""
-                        INSERT INTO stock (brand, fno)
+                        INSERT INTO stock (brand, f_no)
                         VALUES (?, ?);
                         """,
                         (brand, fno))
@@ -66,7 +66,8 @@ def stock_del(conn, brand, fno):
     try:
         cursor.execute("""
                         DELETE FROM stock
-                        WHERE stock.brand = ? AND stock.fno = ?;
+                        WHERE stock.brand = ? 
+                            AND stock.f_no = ?;
                         """,
                         (brand, fno))
         

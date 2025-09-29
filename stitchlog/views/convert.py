@@ -27,7 +27,7 @@ def converted_input(item):
 def converted_page(brand, fno):
     """Converts floss input from one brand to another."""
     conn = setup.get_db()
-    converted_brand, rows = floss.gen_convert(conn, brand, fno)
+    converted_brand, rows = floss.floss_convert(conn, brand, fno)
 
     if not rows:
         return error_response("Conversion does not exist!")
@@ -39,8 +39,9 @@ def converted_page(brand, fno):
                 "brand_fno": row[0],
                 "converted_brand" : converted_brand,
                 "converted_fno": row[1],
-                "hex": row[2],
-                "availability": row[3]
+                "colour": row[2],
+                "hex": row[3],
+                "availability": row[4]
             } 
             for row in rows
         ]

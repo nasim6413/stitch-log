@@ -39,10 +39,12 @@ def project_page_details(project_name):
     """Retrieve specific project details by name."""
     conn = setup.get_db()
 
-    if not search_project(conn, project_name):
+    project_id = search_project(conn, project_name)
+    
+    if not project_id:
         return error_response("Project does not exist!")
 
-    details = projects.list_project_details(conn, project_name)
+    details = projects.project_details(conn, project_id)
     if not details:
         return error_response("There was a problem retrieving the project details.")
 
@@ -83,11 +85,13 @@ def project_delete(project_name):
     """Delete a project and all associated floss."""
     conn = setup.get_db()
 
-    if not search_project(conn, project_name):
+    project_id = search_project(conn, project_name)
+    
+    if not project_id:
         return error_response("Project does not exist!")
 
-    result_project = projects.delete_project(conn, project_name)
-    result_floss = projects.project_del_all_floss(conn, project_name)
+    result_project = projects.delete_project(conn, project_id)
+    result_floss = projects.project_del_all_floss(conn, project_id)
 
     if not (result_project and result_floss):
         return error_response("Error deleting project!")
@@ -99,10 +103,12 @@ def project_page_floss(project_name):
     """List all floss associated with a project."""
     conn = setup.get_db()
 
-    if not search_project(conn, project_name):
+    project_id = search_project(conn, project_name)
+    
+    if not project_id:
         return error_response("Project does not exist!")
 
-    rows = projects.list_project_floss(conn, project_name)
+    rows = projects.list_project_floss(conn, project_id)
     if not rows:
         return error_response("No floss associated with project.")
 
@@ -124,11 +130,12 @@ def project_add_floss(project_name):
     item = data.get("floss", "").strip()
 
     brand, fno = floss.fix_floss_input(item)
+    project_id = search_project(conn, project_name)
 
-    if search_project_floss(conn, project_name, brand, fno):
+    if search_project_floss(conn, project_id, brand, fno):
         return error_response("Floss already in project.")
 
-    result = projects.project_add_floss(conn, project_name, brand, fno)
+    result = projects.project_add_floss(conn, project_id, brand, fno)
     if not result:
         return error_response("Error adding floss to project.")
 
@@ -142,11 +149,12 @@ def project_del_floss(project_name):
     item = data.get("floss", "").strip()
 
     brand, fno = floss.fix_floss_input(item)
+    project_id = search_project(conn, project_name)
 
-    if not search_project_floss(conn, project_name, brand, fno):
+    if not search_project_floss(conn, project_id, brand, fno):
         return error_response("Floss not in project.")
 
-    result = projects.project_delete_floss(conn, project_name, brand, fno)
+    result = projects.project_delete_floss(conn, project_id, brand, fno)
     if not result:
         return error_response("Error deleting floss from project.")
 

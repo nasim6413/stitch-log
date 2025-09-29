@@ -7,7 +7,8 @@ def search_stock(conn, brand, fno):
     cursor.execute("""
                     SELECT stock.*
                     FROM stock 
-                    WHERE stock.brand = ? AND stock.fno = ?
+                    WHERE stock.brand = ? 
+                        AND stock.f_no = ?
                     """, 
                     (brand, fno,))
 
@@ -26,9 +27,9 @@ def search_project(conn, name):
     
     cursor = conn.cursor()
     cursor.execute("""
-                   SELECT id 
-                   FROM project_details
-                   WHERE project_name = ?;
+                   SELECT project_id 
+                   FROM projects
+                   WHERE name = ?;
                    """,
                    (name,))
     
@@ -41,16 +42,22 @@ def search_project(conn, name):
     else:
         return False
     
-def search_project_floss(conn, name, brand, fno):
+def search_project_floss(conn, project_id, brand, fno):
 
     """Check whether a floss is listed under a project."""
 
     cursor = conn.cursor()
     cursor.execute("""
-                    SELECT project_name, brand, fno FROM project_floss
-                    WHERE project_name = ? AND brand = ? AND fno = ?;
+                   SELECT 
+                        project_id, 
+                        brand, 
+                        f_no 
+                    FROM project_floss
+                    WHERE project_id = ? 
+                        AND brand = ? 
+                        AND f_no = ?;
                     """,
-                    (name, brand, fno))
+                    (project_id, brand, fno))
 
     output = cursor.fetchall()
     cursor.close()

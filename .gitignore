@@ -2,3 +2,6 @@ __pycache__
 /instance
 scraper_anchor_conv.py
 scraper_dmc_conv.py
+conversions_merge.py
+anchor_to_dmc.csv
+dmc_to_anchor.csv

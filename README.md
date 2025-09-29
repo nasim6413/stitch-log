@@ -61,6 +61,7 @@ crontab -e
 
 ## Credits
 
+- Conversion data: CyberStitchers.com conversion charts
 - Background image: "Aesthetic Anime City at Dusk" by ruslan-abaev_97 from Wallpapers.com.
 - Fonts: 
     - "Mystery Quest" by Astigmatic, from Google Fonts.
