@@ -75,16 +75,27 @@ function deleteStock(tr) {
     });
 };
 
+// Activate add when pressing enter
+document.getElementById('floss').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        document.getElementById('button-add').click();
+    }
+});
+
 // Add stock
 document.getElementById('button-add').addEventListener('click', () => {
     // Retrieve input
     const floss = document.getElementById('floss').value;
+    const flossBrand = document.getElementById('floss-brand').value;
     clearMessage()
 
     fetch(add_url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ floss })
+        body: JSON.stringify({
+            brand : flossBrand,
+            fno : floss
+            })
         })
         .then(response => response.json())
         .then(result => {

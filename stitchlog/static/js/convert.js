@@ -1,9 +1,27 @@
 import { showErrorMessage, clearMessage } from './utils.js';
 
+// Clear table
+function clearTable() {
+    const thead = document.getElementById('conversion-table-header');
+    const tbody = document.getElementById('conversion-table-body');
+
+    thead.innerHTML = '';
+    tbody.innerHTML = '';
+}
+
+// Activate conversion when pressing enter
+document.getElementById('floss').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        document.getElementById('button-convert').click();
+    }
+});
+
 // Retrieve input & load table
 document.getElementById('button-convert').addEventListener('click', () => {
-    clearMessage()
+    clearMessage();
+    clearTable();
     const floss = document.getElementById('floss').value;
+    const flossBrand = document.getElementById('floss-brand').value;
 
     // Fixes input data
     fetch(`${convert_url}/${floss}`)
@@ -12,12 +30,13 @@ document.getElementById('button-convert').addEventListener('click', () => {
 
         // Invalid data
         if (fixedData.status !== "ok") {
+            clearTable();
             showErrorMessage(fixedData.message);
             return;
         }
         
         // Converts floss with fixed input
-        fetch(`${convert_url}/${fixedData.data.brand}-${fixedData.data.fno}`)
+        fetch(`${convert_url}/${flossBrand}-${fixedData.data.fno}`)
         .then(response => response.json())
         .then(result => {
             if (result.status === "ok") {
@@ -50,7 +69,8 @@ document.getElementById('button-convert').addEventListener('click', () => {
                     tbody.appendChild(tr);
                     });
                 } else {
-                        showErrorMessage(result.message);
+                    clearTable();
+                    showErrorMessage(result.message);
                     }
                 });
             });

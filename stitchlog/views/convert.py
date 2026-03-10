@@ -11,15 +11,13 @@ def convert_page():
 @c.route('/<item>', methods=['GET'])
 def converted_input(item):
     """Validates and fixes floss input."""
-    item = item.strip()
-    brand, fno = floss.fix_floss_input(item)
+    item = floss.fix_floss_input(item)
     
-    if not (brand and fno):
+    if not item:
         return error_response("Invalid input!")
     
     fixed_input = {
-        "brand": brand,
-        "fno" : fno
+        "fno" : item
     }
     return success_response(fixed_input)
     

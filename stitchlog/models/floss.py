@@ -4,30 +4,15 @@ def fix_floss_input(item):
     """Validates and fixes floss input."""
     match = re.match(FLOSS_PATTERN, item, re.IGNORECASE)
 
-    if match:
-        brand = match.group(1)
-        fno = match.group(2)
+    if match:        
+        item = match.group(0)  # take the matched text
         
-        if brand.upper() == BRANDS[0]:
-            brand = brand.upper() 
+        if item.capitalize() == 'White' or item.capitalize() == 'Ecru':
+            item = item.capitalize()
             
-        if brand.capitalize() == BRANDS[1]:
-            brand = brand.capitalize()
-        
-        if fno.capitalize() == 'White' or fno.capitalize() == 'Ecru':
-            fno = fno.capitalize()
-            
-        # Fixes pattern numbers that include letter
-        fno_pattern = r'(.)(\d{1,4})'
-        fno_match = re.match(fno_pattern, fno, re.IGNORECASE)
+        return item
 
-        if fno_match:
-            fno = fno_match.group(1).upper() + fno_match.group(2)
-        
-        return brand, fno
-    
-    else:
-        return False, False
+    return False
     
 def floss_convert(conn, brand, fno):
     """Returns all possible conversions for a specified floss and whether available."""

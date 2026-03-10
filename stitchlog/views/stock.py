@@ -32,11 +32,11 @@ def stock_add_item():
     """Add a floss item to stock."""
     conn = setup.get_db()
     data = request.get_json()
-    item = data.get("floss", "").strip()
+    brand, fno = data['brand'], data['fno']
 
-    brand, fno = floss.fix_floss_input(item)
+    fno = floss.fix_floss_input(fno)
 
-    if not (brand and fno):
+    if not fno:
         return error_response("Invalid input!")
 
     if search_stock(conn, brand, fno):

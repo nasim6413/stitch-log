@@ -1,5 +1,7 @@
 __pycache__
+/venv
 /instance
+schema.png
 scraper_anchor_conv.py
 scraper_dmc_conv.py
 conversions_merge.py

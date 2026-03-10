@@ -92,7 +92,7 @@ p {
 }
 
 .nav-icon {
-  width: 35px;
+  width: 28px;
   height: auto;
   margin-bottom: 5px;
 }
@@ -105,9 +105,9 @@ p {
 /* Form / Input */
 .input-wrapper {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;   /* left align instead of center */
   align-items: center;
-  gap: 10px;
+  gap: 0;                        /* remove gap so they touch */
   margin-bottom: 5px;
 }
 
@@ -133,6 +133,26 @@ input[type="text"] {
 
 .form-field {
   margin-bottom: 1rem;
+}
+
+#floss-brand {
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid #ccc;
+  border-right: none;               /* connects to text box */
+  border-radius: 5px 0 0 5px;       /* round only left side */
+  background-color: white;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+#floss {
+  width: 120px;                    /* smaller text box */
+  height: 30px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 0 5px 5px 0;      /* round only right side */
+  margin: 0;
 }
 
 /* Buttons */

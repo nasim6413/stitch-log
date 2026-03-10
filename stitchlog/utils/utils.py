@@ -1,6 +1,6 @@
 import re
 BRANDS = ['DMC', 'Anchor']
-FLOSS_PATTERN = r'(DMC|Anchor)\s*(\w?\d{1,4}|B5200|ECRU|White)'
+FLOSS_PATTERN = r'\b(?:[A-Z]?\d{1,4}|ECRU|White)'
 
 def natural_key(s):
     """Natural sorting for floss lists."""
