@@ -4,9 +4,14 @@ function addNewRow(item = false) {
     const tr = document.createElement('tr');
 
     tr.innerHTML = `<td>
+                        <select name="floss-brand" id="floss-brand">
+                            <option value="DMC">DMC</option>
+                            <option value="Anchor">Anchor</option>
+                        </select>
                         <input type="text" class="flossRow" name="floss" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                     </td>
-                    <td style="text-align:center; width:20px;">
+                    <td style="border-left: 2px solid transparent; width: 10px;"></td>
+                    <td style="text-align:center; width:25px;">
                         <button class="icon-button" id="deleteRow">
                             <img src="/static/icons/delete.png" 
                                 class="small-icon" />
@@ -32,9 +37,16 @@ document.getElementById('amendAddStock').addEventListener('click', () => {
     addNewRow()
 });
 
-// Add extracted floss
-document.getElementById('uploadPattern').addEventListener('change', () => {
-    if (uploadPattern.files.length > 0) {
+// Upload & extract floss
+const fileInput = document.getElementById("uploadPattern");
+const uploadBtn = document.getElementById("uploadPatternBtn");
+
+uploadBtn.addEventListener("click", () => {
+  fileInput.click();
+});
+
+fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
         const file = uploadPattern.files[0];
         const formData = new FormData();
         formData.append('file', file);

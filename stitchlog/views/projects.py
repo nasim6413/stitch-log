@@ -9,9 +9,9 @@ p = Blueprint('projects', __name__, url_prefix='/projects')
 def projects_home():   
     return render_template('project-list.html')
 
-@p.route('/<project_name>')
-def project_page(project_name):
-    return render_template('project-page.html', project_name=project_name)
+@p.route('/<project_name>-<project_id>')
+def project_page(project_name, project_id):
+    return render_template('project-page.html', project_name=project_name, project_id=project_id)
 
 @p.route('/<project_name>/amend')
 def amend_project(project_name):
@@ -28,18 +28,19 @@ def projects_list():
 
     project_list = [
         {
-            "project_name": row[0]
+            "project_id": row[0],
+            "project_name": row[1]
         }
         for row in rows
     ]
     return success_response(project_list)
 
 @p.route('/<project_name>/details', methods=['GET'])
-def project_page_details(project_name):
+def project_page_details(project_id):
     """Retrieve specific project details by name."""
     conn = setup.get_db()
 
-    project_id = search_project(conn, project_name)
+    project_id = search_project(conn, project_id)
     
     if not project_id:
         return error_response("Project does not exist!")
@@ -54,12 +55,12 @@ def project_page_details(project_name):
 def project_creation():
     """Create a new project and return its name."""
     conn = setup.get_db()
-    result = projects.create_project(conn)
+    project_id = projects.create_project(conn)
 
-    if not result:
+    if not project_id:
         return error_response("Error creating project.")
 
-    return success_response({"project_name": result})
+    return success_response({"project_id": project_id})
  
 # TODO:Project amend details: start date, end date
 @p.route('/<project_name>/amend/save', methods=['GET', 'POST'])

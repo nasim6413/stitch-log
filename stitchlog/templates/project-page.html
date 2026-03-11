@@ -2,22 +2,6 @@
 
 {% block body %}
 
-<!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="modal hidden">
-  <div class="modal-box">
-        <h3>Delete Project</h3>
-        <p>Are you sure you want to delete project <b>{{ project_name }}</b>?</p>
-        <div class="modal-actions">
-            <button id="cancelDelete" class="icon-button">
-                <img src="/static/icons/back.png" class="small-icon"/></button>
-            <button id="confirmDelete" class="icon-button">
-                <img src="/static/icons/check.png" class="small-icon"/>
-            </button>
-        </div>
-    </div>
-</div>
-
-
 <div class="project-header">
     <h2 id="projectName">PROJECT NAME</h2>
 
@@ -57,11 +41,12 @@
 
 <script>
 const SCRIPT_ROOT = {{ request.script_root|tojson }};
+const PROJECT_ID = {{ project_id|tojson }};
 const PROJECT_NAME = {{ project_name|tojson }};
 
-const delete_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/delete`;
-const amend_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/amend`;
-const floss_list_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/floss/list`;
+const delete_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/delete`;
+const amend_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/amend`;
+const floss_list_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/floss/list`;
 </script>
 
 <script type="module" src="{{ url_for('static', filename='js/project-page.js') }}"></script>

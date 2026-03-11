@@ -26,8 +26,7 @@ def set_up(conn):
         CREATE TABLE stock (
             stock_id INTEGER PRIMARY KEY AUTOINCREMENT,
             brand TEXT NOT NULL,
-            f_no TEXT NOT NULL,
-            conversion_id int NOT NULL
+            f_no TEXT NOT NULL
         );
         """)
     

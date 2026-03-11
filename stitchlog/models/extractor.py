@@ -1,6 +1,6 @@
 from pypdf import PdfReader
 from io import BytesIO
-from ..utils.utils import FLOSS_PATTERN
+from ..utils.utils import EXTRACTION_PATTERN
 import re
 
 def validate_upload(file):
@@ -22,7 +22,7 @@ def extract_floss(file):
     
     pattern_file = BytesIO(file.read())
     reader = PdfReader(pattern_file)
-    pattern = re.compile(FLOSS_PATTERN)
+    pattern = re.compile(EXTRACTION_PATTERN)
 
     floss_list = []
 

@@ -22,22 +22,20 @@
 </div>
 
 <div class="form-row">
-  <div class="form-field">
-    <label for="startDate">Start Date</label>
-    <input type="date" id="startDate">
-  </div>
-
-  <div class="form-field">
-    <label for="endDate">End Date</label>
-    <input type="date" id="endDate">
-  </div>
-
-  <div class="form-field upload-field">
-    <label for="uploadPattern">Upload Pattern (PDF)</label>
-    <div class="upload-wrapper">
-      <input type="file" id="uploadPattern" name="file" accept="application/pdf">
+    <div class="form-field">
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate">
     </div>
-  </div>
+
+    <div class="form-field">
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate">
+    </div>
+
+    <div class="form-field upload-field">
+        <!-- Hidden file input -->
+        <input type="file" id="uploadPattern" name="file" accept="application/pdf" hidden>
+    </div>
 </div>
 
 <div class="table-wrapper">
@@ -45,6 +43,11 @@
         <thead>
             <tr>
                 <th>Floss</th>
+                <th style="width:25px;">
+                    <button class="icon-button" id="uploadPatternBtn">
+                        <img src="/static/icons/upload.png" class="small-icon" />
+                    </button>
+                </th>
                 <th style="width:25px;">
                     <button class="icon-button" id="amendAddStock">
                         <img src="/static/icons/add.png" class="small-icon" />

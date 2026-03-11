@@ -1,17 +1,5 @@
-// Delete button (show modal)
+// Delete button
 document.getElementById('deleteProject').addEventListener('click', () => {
-    const deleteModal = document.getElementById('deleteModal');
-    deleteModal.classList.remove('hidden');
-});
-
-// Cancel button (hides modal)
-document.getElementById('cancelDelete').addEventListener('click', () => {
-    const deleteModal = document.getElementById('deleteModal');
-    deleteModal.classList.add('hidden');
-});
-
-// Confirm button (hides modal + deletes project)
-document.getElementById('confirmDelete').addEventListener('click', () => {
     fetch(delete_project_url, 
         { method: "POST" })
         .then(response => response.json())
@@ -25,7 +13,7 @@ document.getElementById('confirmDelete').addEventListener('click', () => {
 });
 
 document.getElementById('amendProject').addEventListener('click', () => {
-    window.location.href = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/amend`;
+    window.location.href = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/amend`;
 });
 
 // Load stock list

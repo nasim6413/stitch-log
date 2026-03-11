@@ -10,7 +10,7 @@ def list_all_projects(conn):
     
     try:
         cursor.execute("""
-                SELECT name
+                SELECT project_id, name
                 FROM projects;
                 """)
         #TODO: add details
@@ -80,9 +80,11 @@ def create_project(conn):
                        """,
                        (project_name, start_date, end_date))
         
+        project_id = cursor.lastrowid
+
         conn.commit()
         cursor.close()
-        return project_name
+        return project_id
     
     except:
         cursor.close()
@@ -102,6 +104,7 @@ def delete_project(conn, name):
                        """,
                        (name,))
         
+        print(f"PROJECT {name} DELETED")
         conn.commit()
         cursor.close()
         return True 
