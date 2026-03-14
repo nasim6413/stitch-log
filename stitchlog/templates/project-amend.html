@@ -62,11 +62,13 @@
 
 <script>
 const SCRIPT_ROOT = {{ request.script_root|tojson }};
-const PROJECT_NAME = {{ project_name|tojson }};
+const PROJECT_ID = {{ project_id|tojson }};
+const PROJECT_NAME = {{ project_details[1]|tojson }};
 
-const extract_floss_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/floss/extract`
-const return_page_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}`
-const save_changes_url = `${SCRIPT_ROOT}/projects/${PROJECT_NAME}/amend/save`
+const extract_floss_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/floss/extract`
+const return_page_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}`
+const save_changes_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/amend/save`
+const floss_list_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/floss/list`
 </script>
 
 <script type="module" src="{{ url_for('static', filename='js/project-amend.js') }}"></script>

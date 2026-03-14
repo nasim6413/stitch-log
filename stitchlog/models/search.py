@@ -21,26 +21,26 @@ def search_stock(conn, brand, fno):
         return False
     
 
-def search_project(conn, name):
+# def search_project(conn, name):
     
-    """Checks whether project exists and returns project id."""
+#     """Checks whether project exists and returns project id."""
     
-    cursor = conn.cursor()
-    cursor.execute("""
-                   SELECT project_id 
-                   FROM projects
-                   WHERE name = ?;
-                   """,
-                   (name,))
+#     cursor = conn.cursor()
+#     cursor.execute("""
+#                    SELECT project_id 
+#                    FROM projects
+#                    WHERE name = ?;
+#                    """,
+#                    (name,))
     
-    output = cursor.fetchone()
-    cursor.close()
+#     output = cursor.fetchone()
+#     cursor.close()
     
-    if len(output) > 0:
-        return output[0]
+#     if len(output) > 0:
+#         return output[0]
     
-    else:
-        return False
+#     else:
+#         return False
     
 def search_project_floss(conn, project_id, brand, fno):
 

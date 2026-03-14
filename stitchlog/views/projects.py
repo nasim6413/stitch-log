@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request
 from stitchlog.models import setup, projects, extractor, floss
-from ..models.search import search_project, search_project_floss
+# from ..models.search import search_project
 from ..utils.responses import *
 
 p = Blueprint('projects', __name__, url_prefix='/projects')
@@ -8,14 +8,6 @@ p = Blueprint('projects', __name__, url_prefix='/projects')
 @p.route('/')
 def projects_home():   
     return render_template('project-list.html')
-
-@p.route('/<project_name>-<project_id>')
-def project_page(project_name, project_id):
-    return render_template('project-page.html', project_name=project_name, project_id=project_id)
-
-@p.route('/<project_name>/amend')
-def amend_project(project_name):
-    return render_template('project-amend.html', project_name=project_name)
 
 @p.route('/list', methods=['GET'])
 def projects_list():
@@ -33,81 +25,24 @@ def projects_list():
         }
         for row in rows
     ]
+
     return success_response(project_list)
 
-@p.route('/<project_name>/details', methods=['GET'])
-def project_page_details(project_id):
-    """Retrieve specific project details by name."""
+@p.route('/<project_id>')
+def project_page(project_id):
     conn = setup.get_db()
 
-    project_id = search_project(conn, project_id)
-    
-    if not project_id:
-        return error_response("Project does not exist!")
-
     details = projects.project_details(conn, project_id)
+
     if not details:
         return error_response("There was a problem retrieving the project details.")
 
-    return success_response(details)
+    return render_template('project-page.html', project_id=project_id, project_details=details)
 
-@p.route('/create', methods=['GET', 'POST'])
-def project_creation():
-    """Create a new project and return its name."""
-    conn = setup.get_db()
-    project_id = projects.create_project(conn)
-
-    if not project_id:
-        return error_response("Error creating project.")
-
-    return success_response({"project_id": project_id})
- 
-# TODO:Project amend details: start date, end date
-@p.route('/<project_name>/amend/save', methods=['GET', 'POST'])
-def save_changes_project(project_name):
-    """Save all changes to project details."""
-    conn = setup.get_db()
-    data = request.get_json()
-    
-    # Updates project name
-    prev_name = data.get("prev_name", "").strip()
-    new_name = data.get("new_name", "").strip()
-    project_id = search_project(conn, prev_name)
-    
-    project_name_result = projects.update_project_name(conn, project_id, new_name)
-    
-    if not project_name_result:
-        return error_response()
-    
-    return success_response()
-
-@p.route('/<project_name>/delete', methods=['POST'])
-def project_delete(project_name):
-    """Delete a project and all associated floss."""
-    conn = setup.get_db()
-
-    project_id = search_project(conn, project_name)
-    
-    if not project_id:
-        return error_response("Project does not exist!")
-
-    result_project = projects.delete_project(conn, project_id)
-    result_floss = projects.project_del_all_floss(conn, project_id)
-
-    if not (result_project and result_floss):
-        return error_response("Error deleting project!")
-
-    return success_response()
-        
-@p.route('/<project_name>/floss/list', methods=['GET'])
-def project_page_floss(project_name):
+@p.route('/<project_id>/floss/list', methods=['GET'])
+def project_page_floss(project_id):
     """List all floss associated with a project."""
     conn = setup.get_db()
-
-    project_id = search_project(conn, project_name)
-    
-    if not project_id:
-        return error_response("Project does not exist!")
 
     rows = projects.list_project_floss(conn, project_id)
     if not rows:
@@ -116,53 +51,73 @@ def project_page_floss(project_name):
     floss_list = [
         {
             "brand": row[0],
-            "fno": row[1],
+            "floss": row[1],
             "availability": row[2],
         }
         for row in rows
     ]
     return success_response(floss_list)
-    
-@p.route('/<project_name>/floss/add', methods=['POST'])
-def project_add_floss(project_name):
-    """Add a floss item to a project."""
+
+@p.route('/create', methods=['GET', 'POST'])
+def project_creation():
+    """Create a new project and return its name."""
+    conn = setup.get_db()
+    result = projects.create_project(conn)
+
+    if not result:
+        return error_response("Error creating project.")
+
+    return success_response({"project_id": result["project_id"],
+                             "project_name": result["project_name"]})
+
+@p.route('/<project_id>/amend')
+def amend_project(project_id):
+    conn = setup.get_db()
+
+    result = projects.project_details(conn, project_id)
+    if not result:
+         return error_response("There was a problem retrieving the project details.")
+
+    return render_template('project-amend.html', project_id=project_id, project_details=result)
+
+@p.route('/<project_id>/amend/save', methods=['GET', 'POST'])
+def save_changes_project(project_id):
+    """Save all changes to project details."""
     conn = setup.get_db()
     data = request.get_json()
-    item = data.get("floss", "").strip()
+    
+    print(f"DATA: {data}")
+    # Clean floss inputs
+    data["floss"] = [
+        {"brand": item["brand"], 
+         "floss": floss.fix_floss_input(item["floss"])}
+        for item in data["floss"]
+    ]
 
-    brand, fno = floss.fix_floss_input(item)
-    project_id = search_project(conn, project_name)
-
-    if search_project_floss(conn, project_id, brand, fno):
-        return error_response("Floss already in project.")
-
-    result = projects.project_add_floss(conn, project_id, brand, fno)
+    print(f"FLOSS INPUTS: {data["floss"]}")
+    
+    result = projects.update_project(conn, data)
+    print(result)
+    
     if not result:
-        return error_response("Error adding floss to project.")
-
+        return error_response()
+    
     return success_response()
 
-@p.route('/<project_name>/floss/delete', methods=['POST'])
-def project_del_floss(project_name):
-    """Delete a floss item from a project."""
+@p.route('/<project_id>/delete', methods=['POST'])
+def project_delete(project_id):
+    """Delete a project and all associated floss."""
     conn = setup.get_db()
-    data = request.get_json()
-    item = data.get("floss", "").strip()
 
-    brand, fno = floss.fix_floss_input(item)
-    project_id = search_project(conn, project_name)
+    result_project = projects.delete_project(conn, project_id)
 
-    if not search_project_floss(conn, project_id, brand, fno):
-        return error_response("Floss not in project.")
-
-    result = projects.project_delete_floss(conn, project_id, brand, fno)
-    if not result:
-        return error_response("Error deleting floss from project.")
+    if not result_project:
+        return error_response("Error deleting project!")
 
     return success_response()
     
-@p.route('/<project_name>/floss/extract', methods=['GET', 'POST'])
-def project_floss_extractor(project_name):
+@p.route('/<project_id>/floss/extract', methods=['GET', 'POST'])
+def project_floss_extractor(project_id):
     """Extract floss list from an uploaded PDF."""
     if "file" not in request.files:
         return error_response("No file uploaded.")

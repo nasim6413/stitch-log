@@ -20,7 +20,8 @@ function addNewRow(item = false) {
 
     // If floss item
     if (item) {
-        tr.querySelector('.flossRow').value = item;
+        tr.querySelector('.flossRow').value = item.floss;
+        tr.querySelector('select[name="floss-brand"]').value = item.brand;
     }
 
     // Deletes row
@@ -47,7 +48,7 @@ uploadBtn.addEventListener("click", () => {
 
 fileInput.addEventListener('change', () => {
     if (fileInput.files.length > 0) {
-        const file = uploadPattern.files[0];
+        const file = fileInput.files[0];
         const formData = new FormData();
         formData.append('file', file);
 
@@ -67,8 +68,25 @@ fileInput.addEventListener('change', () => {
     .catch(error => {
       console.error('Upload error:', error);
       alert('Upload failed.');
+    })
+    .finally(() => {
+        fileInput.value = '';  // reset so change fires correctly next time
     });
 }});
+
+// Load stock list
+function loadStock() {
+    fetch(floss_list_url)
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === "ok") {
+
+            result.data.forEach(item => {
+                addNewRow(item);
+            }); 
+        }
+    });
+};
 
 // Cancel changes
 document.getElementById('cancelChanges').addEventListener('click', () => {
@@ -78,26 +96,35 @@ document.getElementById('cancelChanges').addEventListener('click', () => {
 // Save changes
 document.getElementById('saveChanges').addEventListener('click', () => {
     const newProjectName = document.getElementById('projectName').value;
-    // const flossInputs = document.querySelectorAll('.flossRow');
+    const projectStartDate = document.getElementById('startDate').value;
+    const projectEndDate = document.getElementById('endDate').value;
 
-    // const flossArray = [];
-    // inputs.forEach(input => {
-    //     flossArray.push(input.value);
-    // });
+    // Collect each row's brand + floss number together
+    const flossArray = [];
+    const rows = document.querySelectorAll('#project-floss-amend-body tr');
+    rows.forEach(row => {
+        const brand = row.querySelector('select[name="floss-brand"]').value;
+        const floss = row.querySelector('.flossRow').value;
+        if (floss) {  // skip empty rows
+            flossArray.push({ brand, floss });
+        }
+    });
 
     fetch(save_changes_url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-            prev_name: PROJECT_NAME,
-            new_name: newProjectName,
-            // floss: flossArray
+            project_id: PROJECT_ID,
+            project_name: newProjectName,
+            project_start_date: projectStartDate,
+            project_end_date: projectEndDate,
+            floss: flossArray
         })
     })
     .then(response => response.json())
     .then(result => {
         if (result.status === "ok") {
-            window.location.href = `${SCRIPT_ROOT}/projects/${newProjectName}`;
+            window.location.href = `${SCRIPT_ROOT}/projects/${PROJECT_ID}`;
         } else {
             alert(result.message || "Error: unsaved changes!");
         }
@@ -105,4 +132,7 @@ document.getElementById('saveChanges').addEventListener('click', () => {
 });
 
 // Set default project name input
-window.onload = document.getElementById("projectName").value = PROJECT_NAME;
+window.onload = () => {
+    loadStock();
+    document.getElementById("projectName").value = PROJECT_NAME;
+};

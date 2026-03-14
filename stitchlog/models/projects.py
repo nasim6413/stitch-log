@@ -38,7 +38,8 @@ def project_details(conn, project_id):
             """,
             (project_id,))
     
-        output = cursor.fetchall()
+        output = cursor.fetchone()
+        print(output)
         cursor.close()
         return output
 
@@ -82,29 +83,42 @@ def create_project(conn):
         
         project_id = cursor.lastrowid
 
+        data = {
+            "project_id" : project_id,
+            "project_name" : project_name
+        }
+        
         conn.commit()
         cursor.close()
-        return project_id
+        return data
     
     except:
         cursor.close()
         return False
     
-def delete_project(conn, name):
+def delete_project(conn, project_id):
     
     """Deletes project and relevant data."""
     
     cursor = conn.cursor()
     
     try:
+        # Deletes project details
         cursor.execute("""
                        DELETE FROM projects
-                       WHERE name = ?
+                       WHERE project_id = ?
                        ;
                        """,
-                       (name,))
-        
-        print(f"PROJECT {name} DELETED")
+                       (project_id,))
+
+        # Deletes project floss
+        cursor.execute("""
+            DELETE FROM project_floss
+            WHERE project_id = ?
+            ;
+            """,
+            (project_id,))
+
         conn.commit()
         cursor.close()
         return True 
@@ -114,20 +128,58 @@ def delete_project(conn, name):
         return False 
 
 # PROJECT UPDATES
-def update_project_name(conn, project_id, new_name):
+def update_project(conn, data):
     
-    """Updates project name."""
+    """Updates project details."""
     
     cursor = conn.cursor()
     
     try:
+        # Update project name
         cursor.execute("""
                        UPDATE projects
-                       SET name = ?
+                       SET name = ?, start_date = ?, end_date = ?
                        WHERE project_id = ?;
                        """,
-                       (new_name, project_id,))
+                       (data['project_name'], 
+                        data['project_start_date'],
+                        data['project_end_date'],
+                        data['project_id'],))
         
+        # Retrieve list of current project floss
+        cursor.execute("""
+                       SELECT 
+                            brand, 
+                            f_no
+                        FROM project_floss
+                        WHERE project_id = ?;
+                       """,
+                       (data['project_id'],))
+        
+        floss_db = cursor.fetchall()
+        floss_db = set((row[0], row[1]) for row in floss_db)
+        floss_new = set((item["brand"], item["floss"]) for item in data["floss"])
+
+        to_add = floss_new - floss_db   # in new but not in db
+        to_delete = floss_db - floss_new   # in db but not in new
+
+        print("Calculating floss to add and delete.")
+
+        for brand, f_no in to_add:
+            cursor.execute("""
+                        INSERT INTO project_floss (project_id, brand, f_no) 
+                        VALUES (?, ?, ?)""",
+                        (data["project_id"], brand, f_no)
+                        )
+            
+        for brand, f_no in to_delete:
+            cursor.execute("""
+                        DELETE FROM project_floss
+                        WHERE project_id = ? AND brand = ? AND f_no = ?
+                        """,
+                        (data["project_id"], brand, f_no)
+                        )
+                
         conn.commit()
         cursor.close()
         return True
@@ -135,46 +187,6 @@ def update_project_name(conn, project_id, new_name):
     except:
         cursor.close()
         return False
-    
-# def update_project(conn, name, end_date):
-    
-#     """Updates project's end date."""
-    
-#     cursor = conn.cursor()
-    
-#     if search_project(conn, name):
-#         cursor.execute("""UPDATE projects
-#                        SET end_date = ?
-#                        WHERE project_name = ?;
-#                        """,
-#                        (end_date, name))
-        
-#         conn.commit()
-#         cursor.close()
-#         return True
-    
-#     else:
-#         return False
-    
-# def update_project_progress(conn, name, progress):
-    
-#     """Updates project's progress."""
-    
-#     cursor = conn.cursor()
-    
-#     if search_project(conn, name):
-#         cursor.execute("""UPDATE projects
-#                        SET progress = ?
-#                        WHERE project_name = ?;
-#                        """,
-#                        (progress, name))
-        
-#         conn.commit()
-#         cursor.close()
-#         return True
-    
-#     else:
-#         return False
 
 # PROJECT FLOSS
 def list_project_floss(conn, project_id):
@@ -202,72 +214,6 @@ def list_project_floss(conn, project_id):
         
         cursor.close()
         return output
-
-    except:
-        cursor.close()
-        return False
-
-def project_add_floss(conn, project_id, brand, fno):
-    
-    """Adds floss to project list."""
-    
-    cursor = conn.cursor()
-    
-    try:
-        cursor.execute("""
-                       INSERT INTO project_floss (project_id, brand, f_no)
-                       VALUES (?, ?, ?);
-                       """,
-                       (project_id, brand, fno))
-        conn.commit()
-        cursor.close()
-        return True
-    
-    except:
-        cursor.close()
-        return False
-
-def project_delete_floss(conn, project_id, brand, fno):
-    
-    """Deletes floss from project list."""
-    
-    cursor = conn.cursor()
-    
-    try:
-        cursor.execute("""
-                       DELETE FROM project_floss
-                       WHERE 
-                            project_id = ? 
-                            AND brand = ? 
-                            AND f_no = ?;
-                       """, 
-                       (project_id, brand, fno))
-        
-        conn.commit()
-        cursor.close()
-        return True
-    
-    except:
-        cursor.close()
-        return False
-
-def project_del_all_floss(conn, name):
-    
-    """Delete all floss associated with project."""
-
-    cursor = conn.cursor()
-
-    try:
-        cursor.execute("""
-                DELETE FROM project_floss
-                WHERE project_id = ?
-                ;
-                """,
-                (name,))
-
-        conn.commit()
-        cursor.close()
-        return True
 
     except:
         cursor.close()

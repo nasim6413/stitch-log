@@ -12,7 +12,7 @@ function loadProjects () {
         console.log(result.data)
         result.data.forEach(item => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td><a href="${SCRIPT_ROOT}/projects/${item.project_name}-${item.project_id}" id="project-page">
+            tr.innerHTML = `<td><a href="${SCRIPT_ROOT}/projects/${item.project_id}" id="project-page">
                                 ${item.project_name}
                             </td>
                             <td></td>`;
@@ -28,6 +28,7 @@ document.getElementById('button-new').addEventListener('click', () => {
     .then(response => response.json())
     .then(result => {
         if (result.status === "ok") {
+            loadProjects()
             window.location.href = `${SCRIPT_ROOT}/projects/${result.data.project_id}/amend`;
         } else {
             alert(result.message || "Error!" )

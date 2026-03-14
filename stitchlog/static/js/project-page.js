@@ -31,7 +31,7 @@ function loadStock() {
             result.data.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `<td>${item.brand}</td>
-                                <td>${item.fno}</td>
+                                <td>${item.floss}</td>
                                 <td style="color: ${item.availability ? 'green' : 'red'}">${item.availability ? 'available' : 'not available'}</td>`;
 
                 tbody.appendChild(tr);
@@ -41,5 +41,7 @@ function loadStock() {
 };
 
 // Loads stock on page render
-window.onload = loadStock;
-window.onload = document.getElementById("projectName").textContent = PROJECT_NAME;
+window.onload = () => {
+    loadStock();
+    document.getElementById("projectName").textContent = PROJECT_NAME;
+};

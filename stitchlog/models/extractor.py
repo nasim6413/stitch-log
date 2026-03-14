@@ -33,7 +33,13 @@ def extract_floss(file):
             matches = pattern.findall(text)
 
             for match in matches:               
-                floss_list.append(f'{match[0]} {match[1]}')
-            
-    floss_list = sorted(set(floss_list))
+                floss_list.append({
+                    "brand": match[0], 
+                    "floss": match[1]
+                    })
+
+    # De-duplication
+    floss_list = list({(i["brand"], i["floss"]): i for i in floss_list}.values())
+
+    print(floss_list)
     return floss_list

@@ -28,13 +28,13 @@
 <div class="table-wrapper">
     <table>
         <thead>
-        <tr>
-            <th>Brand</th>
-            <th>Number</th>
-            <th>Available</th>
-        </tr>
+            <tr>
+                <th>Brand</th>
+                <th>Number</th>
+                <th>Available</th>
+            </tr>
         </thead>
-        <tbody id="project-floss-body">
+            <tbody id="project-floss-body">
         </tbody>
     </table>
 </div>
@@ -42,7 +42,7 @@
 <script>
 const SCRIPT_ROOT = {{ request.script_root|tojson }};
 const PROJECT_ID = {{ project_id|tojson }};
-const PROJECT_NAME = {{ project_name|tojson }};
+const PROJECT_NAME = {{ project_details[1]|tojson }};
 
 const delete_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/delete`;
 const amend_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/amend`;
