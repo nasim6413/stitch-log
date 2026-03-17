@@ -3,18 +3,19 @@ function addNewRow(item = false) {
     const tbody = document.getElementById('project-floss-amend-body');
     const tr = document.createElement('tr');
 
-    tr.innerHTML = `<td>
-                        <select name="floss-brand" id="floss-brand">
-                            <option value="DMC">DMC</option>
-                            <option value="Anchor">Anchor</option>
-                        </select>
-                        <input type="text" class="flossRow" name="floss" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    tr.innerHTML = `<td style="padding: 2px 5px;">
+                        <div style="display:flex;">
+                            <select name="floss-brand" class="floss-brand-select">
+                                <option value="DMC">DMC</option>
+                                <option value="Anchor">Anchor</option>
+                            </select>
+                            <input type="text" class="flossRow floss-input" name="floss" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                        </div>
                     </td>
-                    <td style="border-left: 2px solid transparent; width: 10px;"></td>
-                    <td style="text-align:center; width:25px;">
+                    <td style="border-left: 2px solid transparent; width: 10px; padding: 2px;"></td>
+                    <td style="text-align:center; width:25px; padding: 2px;">
                         <button class="icon-button" id="deleteRow">
-                            <img src="/static/icons/delete.png" 
-                                class="small-icon" />
+                            <img src="/static/icons/delete.png" class="small-icon" />
                         </button>
                     </td>`;
 
@@ -87,6 +88,20 @@ function loadStock() {
         }
     });
 };
+
+// Delete button
+document.getElementById('deleteProject').addEventListener('click', () => {
+    fetch(delete_project_url, 
+        { method: "POST" })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === "ok") {
+                window.location.href = `${SCRIPT_ROOT}/projects`;
+            } else {
+                alert(result.message || "Error!");
+            }
+        });
+});
 
 // Cancel changes
 document.getElementById('cancelChanges').addEventListener('click', () => {

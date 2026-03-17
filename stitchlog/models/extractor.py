@@ -41,5 +41,4 @@ def extract_floss(file):
     # De-duplication
     floss_list = list({(i["brand"], i["floss"]): i for i in floss_list}.values())
 
-    print(floss_list)
     return floss_list

@@ -86,18 +86,14 @@ def save_changes_project(project_id):
     conn = setup.get_db()
     data = request.get_json()
     
-    print(f"DATA: {data}")
     # Clean floss inputs
     data["floss"] = [
         {"brand": item["brand"], 
          "floss": floss.fix_floss_input(item["floss"])}
         for item in data["floss"]
     ]
-
-    print(f"FLOSS INPUTS: {data["floss"]}")
     
     result = projects.update_project(conn, data)
-    print(result)
     
     if not result:
         return error_response()

@@ -22,7 +22,7 @@
 </div>
 
 <div class="form-row">
-    <div class="form-field">
+    <!-- <div class="form-field">
         <label for="startDate">Start Date</label>
         <input type="date" id="startDate">
     </div>
@@ -30,7 +30,7 @@
     <div class="form-field">
         <label for="endDate">End Date</label>
         <input type="date" id="endDate">
-    </div>
+    </div> -->
 
     <div class="form-field upload-field">
         <!-- Hidden file input -->
@@ -60,12 +60,17 @@
     </table>
 </div>
 
+<button class="icon-button" id="deleteProject" style="margin-top: 15px;">
+    <img src="/static/icons/delete.png" class="small-icon" />
+</button>
+
 <script>
 const SCRIPT_ROOT = {{ request.script_root|tojson }};
 const PROJECT_ID = {{ project_id|tojson }};
 const PROJECT_NAME = {{ project_details[1]|tojson }};
 
 const extract_floss_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/floss/extract`
+const delete_project_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/delete`;
 const return_page_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}`
 const save_changes_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/amend/save`
 const floss_list_url = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/floss/list`

@@ -1,6 +1,6 @@
 @font-face {
-  font-family: 'Mystery';
-  src: url('/static/fonts/MysteryQuest-Regular.ttf') format('truetype');
+  font-family: 'Sail';
+  src: url('/static/fonts/Sail-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -26,7 +26,7 @@ body {
   width: 1000px;
   max-width: 100%;
   margin: 10px auto;
-  padding: 30px;
+  padding: 15px 15px 20px;
   background-color: rgba(255, 255, 255);
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
@@ -40,7 +40,7 @@ body {
 
 /* Text */
 h1 {
-  font-family: "Mystery", sans-serif;
+  font-family: "Sail", sans-serif;
   font-size:3vw;
   text-align: center;
   margin-bottom: 8px;
@@ -405,4 +405,32 @@ label {
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 2px;
+}
+
+.floss-brand-select {
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid #ccc;
+  border-right: none;
+  border-radius: 5px 0 0 5px;
+  background-color: white;
+  font-size: 15px;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+input[type="text"].floss-input {
+  border-radius: 0 5px 5px 0;
+}
+
+.floss-input {
+  width: 80px;
+  height: 30px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius:  5px 0 0 5px;
+  margin: 0;
+  font-size: 15px;
+  box-sizing: border-box;
 }

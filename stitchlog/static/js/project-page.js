@@ -1,19 +1,5 @@
-// Delete button
-document.getElementById('deleteProject').addEventListener('click', () => {
-    fetch(delete_project_url, 
-        { method: "POST" })
-        .then(response => response.json())
-        .then(result => {
-            if (result.status === "ok") {
-                window.location.href = `${SCRIPT_ROOT}/projects`;
-            } else {
-                alert(result.message || "Error!");
-            }
-        });
-});
-
 document.getElementById('amendProject').addEventListener('click', () => {
-    window.location.href = `${SCRIPT_ROOT}/projects/${PROJECT_ID}/amend`;
+    window.location.href = amend_project_url;
 });
 
 // Load stock list
